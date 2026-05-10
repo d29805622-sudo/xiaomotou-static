@@ -2,11 +2,184 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>角色卡牌图鉴 - 小魔头同人创作平台</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="never">
+    <title>角色卡牌图鉴 - 同人创作交流平台</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            background: #0c0e1a;
+            color: #e8ebf2;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .container {
+            width: 94%;
+            max-width: 1380px;
+            margin: 0 auto;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* 顶部状态栏 */
+        .top-bar {
+            background: rgba(25, 28, 48, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(138, 108, 255, 0.2);
+            padding: 8px 0;
+            font-size: 14px;
+        }
+        .top-bar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap:8px;
+        }
+        .top-info span {
+            margin-right: 20px;
+            color: #b0b8d4;
+        }
+        .theme-switch {
+            cursor: pointer;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: linear-gradient(135deg,#6344e8,#a864ff);
+            font-size: 13px;
+        }
+
+        /* 导航栏 */
+        .header {
+            background: rgba(18, 21, 39, 0.75);
+            backdrop-filter: blur(16px);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            border-bottom: 1px solid rgba(124, 92, 255, 0.18);
+        }
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 70px;
+            flex-wrap: wrap;
+            gap:15px;
+            padding:10px 0;
+        }
+        .nav-logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(90deg,#7c62ff,#e288ff);
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+        }
+        .nav-menu a {
+            color: #c5cbe8;
+            margin: 0 8px;
+            padding: 7px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            display:inline-block;
+        }
+        .nav-menu a:hover {
+            background: rgba(124, 92, 255, 0.25);
+            color: #fff;
+            box-shadow: 0 0 12px rgba(124, 92, 255, 0.35);
+        }
+        .login-btn {
+            display:flex;
+            flex-wrap:wrap;
+            gap:8px;
+        }
+        .sign-btn {
+            background: linear-gradient(135deg,#4834d4,#8356f9);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 24px;
+        }
+        .common-btn {
+            border: 1px solid rgba(138,108,255,0.4);
+            color: #d0c8ff;
+            background: transparent;
+            padding: 8px 16px;
+            border-radius: 24px;
+        }
+
+        /* 警示条 */
+        .warn-bar {
+            margin: 15px auto;
+            width: 94%;
+            padding: 12px;
+            text-align: center;
+            background: rgba(220, 80, 80, 0.12);
+            border: 1px solid rgba(255,100,100,0.3);
+            border-radius: 10px;
+            color: #ff8c8c;
+            letter-spacing: 1px;
+            font-size:14px;
+        }
+
+        /* 标题通用 */
+        h2 {
+            font-size: 21px;
+            margin: 30px 0 18px;
+            padding-left: 12px;
+            border-left: 4px solid #8064ff;
+            color: #e6eaff;
+        }
+
+        /* 搜索区域 */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            flex-wrap:wrap;
+            margin-bottom: 30px;
+        }
+        .search-input {
+            flex: 1;
+            min-width:200px;
+            height: 46px;
+            background: rgba(20,23,45,0.7);
+            border: 1px solid rgba(124,92,255,0.3);
+            border-radius: 10px;
+            padding: 0 18px;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: 0.3s;
+        }
+        .search-input:focus {
+            border-color: #8064ff;
+            box-shadow: 0 0 15px rgba(124,92,255,0.25);
+        }
+        .search-btn {
+            width: 120px;
+            height:46px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg,#5c40e0,#9068ff);
+            color: #fff;
+            font-size: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(90,60,220,0.3);
+        }
+
+        /* 角色卡牌画廊 */
         .card-gallery {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -14,8 +187,8 @@
             margin: 20px 0;
         }
         .char-card {
-            background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(124, 58, 237, 0.2));
-            border: 1px solid rgba(168, 85, 247, 0.3);
+            background: linear-gradient(135deg, rgba(99,68,232,0.2), rgba(168,100,255,0.2));
+            border: 1px solid rgba(124,92,255,0.3);
             border-radius: 15px;
             padding: 20px;
             text-align: center;
@@ -23,37 +196,163 @@
         }
         .char-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.3);
+            box-shadow: 0 10px 30px rgba(124,92,255,0.3);
         }
         .char-card img {
             width: 120px;
             height: 120px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(124,92,255,0.1);
             margin-bottom: 15px;
             object-fit: cover;
+            border: 2px solid rgba(124,92,255,0.3);
         }
         .char-card h3 {
-            color: #a855f7;
+            color: #e288ff;
             margin-bottom: 10px;
         }
         .char-card p {
-            color: #999;
+            color: #9fa6d2;
             font-size: 14px;
+        }
+
+        /* 悬浮工具栏 */
+        .float-tool {
+            position: fixed;
+            right: 15px;
+            bottom: 120px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 998;
+        }
+        .tool-item {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(35,38,70,0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(124,92,255,0.3);
+            color: #c8bfff;
+            text-align: center;
+            line-height: 42px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+            font-size:14px;
+            cursor:pointer;
+        }
+
+        /* 看板娘 */
+        .kanban {
+            position: fixed;
+            right: 15px;
+            bottom: 30px;
+            z-index: 997;
+            cursor:pointer;
+        }
+        .kanban img {
+            width:75px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+            border: 1px solid rgba(130,100,255,0.25);
+        }
+
+        /* 页脚 */
+        .footer {
+            background: rgba(15,18,35,0.9);
+            border-top: 1px solid rgba(124,92,255,0.2);
+            margin-top: 50px;
+            padding: 35px 0 20px;
+        }
+        .footer-wrap {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap:wrap;
+            gap:30px;
+        }
+        .footer-col {
+            min-width:140px;
+        }
+        .footer-col h4 {
+            color: #d8dfff;
+            margin-bottom: 14px;
+            font-size: 16px;
+        }
+        .footer-col a {
+            display: block;
+            color: #8e96c2;
+            line-height: 2;
+            font-size: 14px;
+        }
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            margin-top: 25px;
+            border-top: 1px solid rgba(124,92,255,0.15);
+            color: #7880aa;
+            font-size: 13px;
+            line-height:1.8;
+        }
+
+        /* 响应式适配 */
+        @media (max-width:768px){
+            .nav{
+                flex-direction:column;
+                text-align:center;
+            }
+            .nav-menu{
+                text-align:center;
+            }
+            .top-info span{
+                font-size:13px;
+                margin-right:10px;
+            }
+            h2{
+                font-size:19px;
+            }
+        }
+        @media (max-width:480px){
+            .nav-logo{
+                font-size:20px;
+            }
+            .nav-menu a{
+                font-size:13px;
+                margin:3px;
+                padding:5px 8px;
+            }
+            .login-btn a{
+                padding:6px 12px;
+                font-size:12px;
+            }
+            .card-gallery{
+                grid-template-columns:repeat(2,1fr);
+            }
+            .float-tool{
+                right:8px;
+            }
+            .kanban img{
+                width:60px;
+            }
+            .footer-wrap{
+                flex-direction:column;
+                text-align:center;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="top-status">
+    <div class="top-bar">
         <div class="container">
-            <span>在线人数：<i>236</i> 人</span>
-            <span>今日访问：<i>5218</i></span>
+            <div class="top-info">
+                <span>在线人数：实时统计</span>
+                <span>今日访问：流量自动统计</span>
+            </div>
+            <div class="theme-switch">切换显示模式</div>
         </div>
     </div>
 
     <header class="header">
         <div class="container nav">
-            <a href="index.html" class="nav-logo">小魔头同人创作平台</a>
+            <a href="index.html" class="nav-logo">同人创作平台</a>
             <div class="nav-menu">
                 <a href="game.html">游戏资源</a>
                 <a href="mod.html">MOD模组</a>
@@ -63,9 +362,11 @@
                 <a href="tool.html">素材教程</a>
                 <a href="card.html">角色卡牌</a>
             </div>
-            <div class="login-btn">
-                <a href="login.html" class="btn">登录</a>
-                <a href="register.html" class="btn">注册</a>
+            <div class="login-btn" id="navButtons">
+                <a href="sign.html" class="sign-btn">每日签到</a>
+                <a href="user.html" class="common-btn">个人中心</a>
+                <a href="login.html" class="common-btn">登录</a>
+                <a href="register.html" class="common-btn">注册</a>
             </div>
         </div>
     </header>
@@ -74,36 +375,36 @@
         同人创作交流专区 禁止违规传播 严格内容自查
     </div>
 
-    <div class="container" style="padding: 30px 20px;">
+    <div class="container">
         <h2>🎴 角色卡牌图鉴</h2>
-        <p style="color: #999; margin: 10px 0 20px;">收集所有游戏角色，查看角色详细信息</p>
+        <p style="color: #8991bc; margin: 10px 0 20px;">收集所有游戏角色，查看角色详细信息</p>
 
-        <div class="search-box" style="margin-bottom: 30px;">
+        <div class="search-box">
             <input type="text" class="search-input" placeholder="搜索角色名称...">
             <button class="search-btn">搜索</button>
         </div>
 
         <div class="card-gallery">
             <div class="char-card">
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect fill='%23ff6b9d' width='120' height='120'/%3E%3Ctext x='60' y='70' text-anchor='middle' fill='white' font-size='40'%3E1%3C/text%3E%3C/svg%3E" alt="角色">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect fill='%236344e8' width='120' height='120'/%3E%3Ctext x='60' y='70' text-anchor='middle' fill='white' font-size='40'%3E1%3C/text%3E%3C/svg%3E" alt="角色">
                 <h3>女主角一号</h3>
                 <p>性格：温柔体贴</p>
                 <p>稀有度：★★★★★</p>
             </div>
             <div class="char-card">
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect fill='%23a855f7' width='120' height='120'/%3E%3Ctext x='60' y='70' text-anchor='middle' fill='white' font-size='40'%3E2%3C/text%3E%3C/svg%3E" alt="角色">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect fill='%23a864ff' width='120' height='120'/%3E%3Ctext x='60' y='70' text-anchor='middle' fill='white' font-size='40'%3E2%3C/text%3E%3C/svg%3E" alt="角色">
                 <h3>女主角二号</h3>
                 <p>性格：活泼可爱</p>
                 <p>稀有度：★★★★☆</p>
             </div>
             <div class="char-card">
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect fill='%23ffd93d' width='120' height='120'/%3E%3Ctext x='60' y='70' text-anchor='middle' fill='white' font-size='40'%3E3%3C/text%3E%3C/svg%3E" alt="角色">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect fill='%23e288ff' width='120' height='120'/%3E%3Ctext x='60' y='70' text-anchor='middle' fill='white' font-size='40'%3E3%3C/text%3E%3C/svg%3E" alt="角色">
                 <h3>配角角色</h3>
                 <p>性格：神秘高冷</p>
                 <p>稀有度：★★★☆☆</p>
             </div>
             <div class="char-card">
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect fill='%2300d9ff' width='120' height='120'/%3E%3Ctext x='60' y='70' text-anchor='middle' fill='white' font-size='40'%3E4%3C/text%3E%3C/svg%3E" alt="角色">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect fill='%238064ff' width='120' height='120'/%3E%3Ctext x='60' y='70' text-anchor='middle' fill='white' font-size='40'%3E4%3C/text%3E%3C/svg%3E" alt="角色">
                 <h3>隐藏角色</h3>
                 <p>性格：多重人格</p>
                 <p>稀有度：★★★★★</p>
@@ -111,12 +412,45 @@
         </div>
     </div>
 
+    <div class="float-tool">
+        <div class="tool-item" id="scrollTopBtn" title="返回顶部" style="display: none;">⬆️</div>
+        <a href="help.html" class="tool-item" title="帮助中心">❓</a>
+        <a href="report.html" class="tool-item" title="违规举报">🚨</a>
+    </div>
+
+    <div class="kanban">
+        <img src="images/kanban.png" alt="看板形象">
+    </div>
+
     <footer class="footer">
+        <div class="container footer-wrap">
+            <div class="footer-col">
+                <h4>网站导航</h4>
+                <a href="index.html">首页</a>
+                <a href="game.html">游戏资源</a>
+                <a href="editor.html">创作中心</a>
+                <a href="forum.html">社区论坛</a>
+            </div>
+            <div class="footer-col">
+                <h4>帮助服务</h4>
+                <a href="help.html">使用教程</a>
+                <a href="user.html">账号问题</a>
+                <a href="feedback.html">投稿规则</a>
+                <a href="privacy.html">隐私协议</a>
+            </div>
+            <div class="footer-col">
+                <h4>联系我们</h4>
+                <a href="feedback.html">站内私信客服</a>
+                <a href="report.html">24小时内容审核</a>
+            </div>
+        </div>
         <div class="copyright">
-            <p>©2026 小魔头同人二创静态网站 | 纯静态浏览平台</p>
+            ©2026 同人创作交流平台 原创兴趣交流站点 | 严禁私自转载搬运
+            <br>本站仅作兴趣交流，所有内容均由用户自主创作发布
         </div>
     </footer>
 
+    <script src="js/common.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>

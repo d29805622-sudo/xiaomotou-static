@@ -1,0 +1,163 @@
+/* 全局用户体验增强样式 */
+
+/* 添加页面加载淡入效果 */
+body {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+body.loaded {
+    opacity: 1;
+}
+
+/* 按钮和链接的通用动画优化 */
+a, .btn, .card-btn, .auth-btn, .sign-btn, .common-btn {
+    transition: all 0.2s ease-out !important;
+    transform: translateZ(0);
+}
+
+a:hover, .btn:hover, .card-btn:hover, .auth-btn:hover, .sign-btn:hover, .common-btn:hover {
+    transform: translateY(-2px);
+}
+
+a:active, .btn:active, .card-btn:active, .auth-btn:active, .sign-btn:active, .common-btn:active {
+    transform: translateY(0);
+}
+
+/* 卡片悬停优化 */
+.card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+    transform: translateY(-4px) scale(1.02) !important;
+    box-shadow: 0 20px 40px rgba(100, 70, 230, 0.3) !important;
+}
+
+/* 输入框聚焦优化 */
+input, textarea, select {
+    transition: all 0.2s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(124, 92, 255, 0.4);
+}
+
+/* 浮动工具栏优化 */
+.tool-item {
+    transition: all 0.2s ease;
+}
+
+.tool-item:hover {
+    transform: scale(1.15);
+    background: linear-gradient(135deg, #6344e8, #a864ff);
+    color: white;
+    box-shadow: 0 4px 15px rgba(124, 92, 255, 0.5);
+}
+
+/* 导航栏菜单优化 */
+.nav-menu a {
+    position: relative;
+}
+
+.nav-menu a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #7c62ff, #e288ff);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.nav-menu a:hover::after {
+    width: 80%;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(20, 23, 45, 0.5);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #6344e8, #a864ff);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #4c34b8, #8a4ce8);
+}
+
+/* 表单错误提示视觉效果 */
+input.error {
+    animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* 成功提示效果 */
+@keyframes success-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(80, 250, 123, 0.4); }
+    100% { box-shadow: 0 0 0 15px rgba(80, 250, 123, 0); }
+}
+
+.success-highlight {
+    animation: success-pulse 0.6s ease-out;
+}
+
+/* 通知消息样式 */
+.notification {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 12px;
+    z-index: 9999;
+    animation: slideIn 0.3s ease-out;
+}
+
+.notification.success {
+    background: rgba(80, 250, 123, 0.9);
+    color: #1f2937;
+}
+
+.notification.error {
+    background: rgba(255, 107, 107, 0.9);
+    color: #fff;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 响应式优化补充 */
+@media (max-width: 768px) {
+    .card:hover {
+        transform: translateY(-2px) scale(1.01) !important;
+    }
+    
+    .notification {
+        right: 10px;
+        left: 10px;
+    }
+}

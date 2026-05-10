@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
+    
     <meta name="referrer" content="never">
     <title>同人创作交流平台 - 首页</title>
+    <link rel="stylesheet" href="css/ux-enhancements.css">
     <style>
         * {
             margin: 0;
@@ -667,9 +668,9 @@
     </div>
 
     <div class="float-tool">
-        <div class="tool-item">顶</div>
-        <a href="help.html" class="tool-item">帮</a>
-        <a href="report.html" class="tool-item">举</a>
+        <div class="tool-item" id="scrollTopBtn" title="返回顶部" style="display: none;">⬆️</div>
+        <a href="help.html" class="tool-item" title="帮助中心">❓</a>
+        <a href="report.html" class="tool-item" title="违规举报">🚨</a>
     </div>
 
     <div class="kanban">
@@ -704,31 +705,7 @@
         </div>
     </footer>
 
-    <script>
-        // 检查登录状态并更新导航栏
-        document.addEventListener('DOMContentLoaded', function() {
-            const navButtons = document.getElementById('navButtons');
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            
-            if (currentUser) {
-                // 已登录状态
-                navButtons.innerHTML = `
-                    <span style="color: #c0b4ff; margin-right: 10px; font-size: 14px;">👋 ${currentUser.username}</span>
-                    <a href="sign.html" class="sign-btn">每日签到</a>
-                    <a href="user.html" class="common-btn">个人中心</a>
-                    <a href="javascript:void(0);" class="common-btn" onclick="logout()">退出登录</a>
-                `;
-            }
-        });
-
-        // 退出登录函数
-        function logout() {
-            if (confirm('确定要退出登录吗？')) {
-                localStorage.removeItem('currentUser');
-                location.reload();
-            }
-        }
-    </script>
+    <script src="js/common.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>
