@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>社区论坛 - 小魔头同人创作平台</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .forum-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        body.light-theme .forum-section {
+            background: rgba(255, 255, 255, 0.9);
+        }
+        .forum-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 10px;
+        }
+        .forum-post {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        body.light-theme .forum-post {
+            border-bottom-color: rgba(0,0,0,0.1);
+        }
+        .forum-post:last-child {
+            border-bottom: none;
+        }
+        .forum-post h4 {
+            margin-bottom: 8px;
+        }
+        .forum-post h4 a {
+            color: #fff;
+            text-decoration: none;
+        }
+        body.light-theme .forum-post h4 a {
+            color: #2d3436;
+        }
+        .forum-post h4 a:hover {
+            color: var(--primary-color);
+        }
+        .post-meta {
+            font-size: 13px;
+            color: #999;
+        }
+        .post-meta span {
+            margin-right: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-status">
+        <div class="container">
+            <span>在线人数：<i>236</i> 人</span>
+            <span>今日访问：<i>5218</i></span>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="container nav">
+            <a href="index.html" class="nav-logo">小魔头同人创作平台</a>
+            <div class="nav-menu">
+                <a href="game.html">游戏资源</a>
+                <a href="mod.html">MOD模组</a>
+                <a href="play.html">在线游玩</a>
+                <a href="editor.html">创作工具</a>
+                <a href="forum.html">社区论坛</a>
+                <a href="tool.html">素材教程</a>
+                <a href="card.html">角色卡牌</a>
+            </div>
+            <div class="login-btn">
+                <a href="login.html" class="btn">登录</a>
+                <a href="register.html" class="btn">注册</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="warn-bar">
+        同人创作交流专区 禁止违规传播 严格内容自查
+    </div>
+
+    <div class="container" style="padding: 30px 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>💬 社区论坛</h2>
+            <a href="#" class="btn"><i class="fa-solid fa-pen"></i> 发布新帖</a>
+        </div>
+
+        <div class="forum-section">
+            <h3>🔥 热门话题</h3>
+            <div class="forum-post">
+                <h4><a href="#">【攻略】第三章全结局达成条件整理</a></h4>
+                <div class="post-meta">
+                    <span>作者：攻略达人</span>
+                    <span>回复：326</span>
+                    <span>浏览：5621</span>
+                </div>
+            </div>
+            <div class="forum-post">
+                <h4><a href="#">【求助】安卓版卡在启动画面怎么办</a></h4>
+                <div class="post-meta">
+                    <span>作者：新手玩家</span>
+                    <span>回复：89</span>
+                    <span>浏览：1256</span>
+                </div>
+            </div>
+            <div class="forum-post">
+                <h4><a href="#">【讨论】大家最喜欢的女主角是谁</a></h4>
+                <div class="post-meta">
+                    <span>作者：剧情党</span>
+                    <span>回复：1024</span>
+                    <span>浏览：8956</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="forum-section">
+            <h3>💡 创作交流</h3>
+            <div class="forum-post">
+                <h4><a href="#">【分享】自己做的第一个MOD，分享一下</a></h4>
+                <div class="post-meta">
+                    <span>作者：MOD新手</span>
+                    <span>回复：56</span>
+                    <span>浏览：892</span>
+                </div>
+            </div>
+            <div class="forum-post">
+                <h4><a href="#">【教程】如何使用剧本编辑器</a></h4>
+                <div class="post-meta">
+                    <span>作者：教程君</span>
+                    <span>回复：234</span>
+                    <span>浏览：3652</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="copyright">
+            <p>©2026 小魔头同人二创静态网站 | 纯静态浏览平台</p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

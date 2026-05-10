@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>注册 - 小魔头同人创作平台</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .auth-box {
+            max-width: 400px;
+            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+        }
+        body.light-theme .auth-box {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .auth-box h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        body.light-theme .form-group label {
+            color: #2d3436;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 16px;
+        }
+        body.light-theme .form-group input {
+            background: #f8f9fa;
+            border-color: #ddd;
+            color: #2d3436;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--gradient-pink);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 107, 157, 0.4);
+        }
+        .auth-links {
+            text-align: center;
+            margin-top: 20px;
+            color: #ccc;
+        }
+        body.light-theme .auth-links {
+            color: #666;
+        }
+        .auth-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-status">
+        <div class="container">
+            <span>在线人数：<i>236</i> 人</span>
+            <span>今日访问：<i>5218</i></span>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="container nav">
+            <a href="index.html" class="nav-logo">小魔头同人创作平台</a>
+            <div class="login-btn">
+                <a href="login.html" class="btn">登录</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="auth-box">
+            <h2><i class="fa-solid fa-user-plus"></i> 用户注册</h2>
+
+            <form>
+                <div class="form-group">
+                    <label>用户名</label>
+                    <input type="text" placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label>邮箱账号</label>
+                    <input type="email" placeholder="请输入邮箱">
+                </div>
+                <div class="form-group">
+                    <label>登录密码</label>
+                    <input type="password" placeholder="请输入密码（至少6位）">
+                </div>
+                <div class="form-group">
+                    <label>确认密码</label>
+                    <input type="password" placeholder="请再次输入密码">
+                </div>
+                <button type="submit" class="auth-btn">立即注册</button>
+            </form>
+
+            <div class="auth-links">
+                已有账号？<a href="login.html">立即登录</a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="copyright">
+            <p>©2026 小魔头同人二创静态网站</p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

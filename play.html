@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>在线游玩 - 小魔头同人创作平台</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .play-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px auto;
+            max-width: 900px;
+        }
+        .play-frame {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .play-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-status">
+        <div class="container">
+            <span>在线人数：<i>236</i> 人</span>
+            <span>今日访问：<i>5218</i></span>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="container nav">
+            <a href="index.html" class="nav-logo">小魔头同人创作平台</a>
+            <div class="nav-menu">
+                <a href="game.html">游戏资源</a>
+                <a href="mod.html">MOD模组</a>
+                <a href="play.html">在线游玩</a>
+                <a href="editor.html">创作工具</a>
+                <a href="forum.html">社区论坛</a>
+            </div>
+            <div class="login-btn">
+                <a href="login.html" class="btn">登录</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="warn-bar">
+        同人创作交流专区 禁止违规传播 严格内容自查
+    </div>
+
+    <div class="container">
+        <div class="play-section">
+            <h2>🎮 在线试玩区</h2>
+            <p style="color: #999; margin: 10px 0 20px;">点击开始按钮加载游戏（演示模式）</p>
+
+            <div class="play-frame">
+                <div style="text-align: center;">
+                    <i class="fa-solid fa-gamepad" style="font-size: 80px; color: #666; margin-bottom: 20px;"></i>
+                    <p style="color: #999;">游戏加载区域</p>
+                    <p style="color: #666; font-size: 14px; margin-top: 10px;">（需要嵌入游戏文件后才能运行）</p>
+                </div>
+            </div>
+
+            <div class="play-controls">
+                <button class="btn" onclick="alert('游戏加载中...')">
+                    <i class="fa-solid fa-play"></i> 开始游戏
+                </button>
+                <button class="btn" onclick="alert('全屏模式')">
+                    <i class="fa-solid fa-expand"></i> 全屏
+                </button>
+                <button class="btn" onclick="alert('设置选项')">
+                    <i class="fa-solid fa-cog"></i> 设置
+                </button>
+            </div>
+        </div>
+
+        <div class="card-list" style="margin-top: 30px;">
+            <div class="card">
+                <h3>试玩示例一</h3>
+                <p>同人小游戏Demo展示</p>
+                <a href="#" class="btn">开始试玩</a>
+            </div>
+            <div class="card">
+                <h3>试玩示例二</h3>
+                <p>剧本编辑器预览</p>
+                <a href="#" class="btn">开始试玩</a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="copyright">
+            <p>©2026 小魔头同人二创静态网站</p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

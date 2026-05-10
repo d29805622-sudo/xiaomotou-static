@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>每日签到 - 小魔头同人创作平台</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sign-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 50px auto;
+            max-width: 500px;
+            text-align: center;
+        }
+        body.light-theme .sign-box {
+            background: rgba(255, 255, 255, 0.95);
+        }
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin: 30px 0;
+        }
+        .calendar-day {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+        .calendar-day.signed {
+            background: var(--primary-color);
+        }
+        .calendar-day.today {
+            border: 2px solid var(--accent-color);
+        }
+        .sign-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--gradient-pink);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .sign-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 107, 157, 0.4);
+        }
+        .sign-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-status">
+        <div class="container">
+            <span>在线人数：<i>236</i> 人</span>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="container nav">
+            <a href="index.html" class="nav-logo">小魔头同人创作平台</a>
+            <div class="login-btn">
+                <a href="login.html" class="btn">登录</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="sign-box">
+            <h2>📅 每日签到</h2>
+            <p style="color: #999; margin: 10px 0;">连续签到获得更多积分奖励</p>
+            
+            <div class="calendar">
+                <div class="calendar-day">一</div>
+                <div class="calendar-day">二</div>
+                <div class="calendar-day">三</div>
+                <div class="calendar-day signed">四</div>
+                <div class="calendar-day today">五</div>
+                <div class="calendar-day">六</div>
+                <div class="calendar-day">日</div>
+            </div>
+
+            <button class="sign-btn" id="signBtn">
+                <i class="fa-solid fa-calendar-check"></i> 立即签到
+            </button>
+            
+            <p style="margin-top: 20px; color: #999;">
+                已连续签到 <span style="color: var(--primary-color);">4</span> 天
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('signBtn').addEventListener('click', function() {
+            alert('签到成功！获得 10 积分奖励');
+            this.disabled = true;
+            this.innerHTML = '<i class="fa-solid fa-check"></i> 已签到';
+        });
+    </script>
+</body>
+</html>
