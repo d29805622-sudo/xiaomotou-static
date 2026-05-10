@@ -2,28 +2,143 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>注册 - 小魔头同人创作平台</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="never">
+    <title>注册 - 同人创作交流平台</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+        body {
+            background: #0c0e1a;
+            color: #e8ebf2;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        .container {
+            width: 94%;
+            max-width: 1380px;
+            margin: 0 auto;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* 顶部状态栏 */
+        .top-bar {
+            background: rgba(25, 28, 48, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(138, 108, 255, 0.2);
+            padding: 8px 0;
+            font-size: 14px;
+        }
+        .top-bar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap:8px;
+        }
+        .top-info span {
+            margin-right: 20px;
+            color: #b0b8d4;
+        }
+
+        /* 导航栏 */
+        .header {
+            background: rgba(18, 21, 39, 0.75);
+            backdrop-filter: blur(16px);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            border-bottom: 1px solid rgba(124, 92, 255, 0.18);
+        }
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 70px;
+            flex-wrap: wrap;
+            gap:15px;
+            padding:10px 0;
+        }
+        .nav-logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(90deg,#7c62ff,#e288ff);
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+        }
+        .nav-menu a {
+            color: #c5cbe8;
+            margin: 0 8px;
+            padding: 7px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            display:inline-block;
+        }
+        .nav-menu a:hover {
+            background: rgba(124, 92, 255, 0.25);
+            color: #fff;
+            box-shadow: 0 0 12px rgba(124, 92, 255, 0.35);
+        }
+        .login-btn {
+            display:flex;
+            flex-wrap:wrap;
+            gap:8px;
+        }
+        .sign-btn {
+            background: linear-gradient(135deg,#4834d4,#8356f9);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 24px;
+        }
+        .common-btn {
+            border: 1px solid rgba(138,108,255,0.4);
+            color: #d0c8ff;
+            background: transparent;
+            padding: 8px 16px;
+            border-radius: 24px;
+        }
+
+        /* 警示条 */
+        .warn-bar {
+            margin: 15px auto;
+            width: 94%;
+            padding: 12px;
+            text-align: center;
+            background: rgba(220, 80, 80, 0.12);
+            border: 1px solid rgba(255,100,100,0.3);
+            border-radius: 10px;
+            color: #ff8c8c;
+            letter-spacing: 1px;
+            font-size:14px;
+        }
+
+        /* 注册盒子 */
         .auth-box {
-            max-width: 400px;
+            max-width: 420px;
             margin: 50px auto;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(24,27,52,0.72);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 40px;
-            backdrop-filter: blur(10px);
-        }
-        body.light-theme .auth-box {
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(130,100,255,0.18);
+            box-shadow: 0 8px 26px rgba(0,0,0,0.28);
         }
         .auth-box h2 {
             text-align: center;
-            color: var(--primary-color);
             margin-bottom: 30px;
-            font-size: 28px;
+            font-size: 24px;
+            color: #e6eaff;
         }
         .form-group {
             margin-bottom: 20px;
@@ -31,111 +146,176 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #fff;
-        }
-        body.light-theme .form-group label {
-            color: #2d3436;
+            color: #c5cbe8;
         }
         .form-group input {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 14px 16px;
+            border: 1px solid rgba(124,92,255,0.3);
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(20,23,45,0.7);
             color: #fff;
-            font-size: 16px;
-        }
-        body.light-theme .form-group input {
-            background: #f8f9fa;
-            border-color: #ddd;
-            color: #2d3436;
+            font-size: 15px;
+            outline: none;
+            transition: 0.3s;
         }
         .form-group input:focus {
-            outline: none;
-            border-color: var(--primary-color);
+            border-color: #8064ff;
+            box-shadow: 0 0 15px rgba(124,92,255,0.25);
         }
         .auth-btn {
             width: 100%;
             padding: 14px;
-            background: var(--gradient-pink);
+            background: linear-gradient(135deg,#583ed8,#8c64f8);
             color: #fff;
             border: none;
             border-radius: 10px;
-            font-size: 18px;
+            font-size: 16px;
             cursor: pointer;
             transition: all 0.3s;
         }
         .auth-btn:hover {
+            box-shadow: 0 4px 14px rgba(88,62,216,0.4);
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(255, 107, 157, 0.4);
         }
         .auth-links {
             text-align: center;
             margin-top: 20px;
-            color: #ccc;
-        }
-        body.light-theme .auth-links {
-            color: #666;
+            color: #8991bc;
         }
         .auth-links a {
-            color: var(--primary-color);
-            text-decoration: none;
+            color: #a898ff;
+        }
+
+        /* 页脚 */
+        .footer {
+            background: rgba(15,18,35,0.9);
+            border-top: 1px solid rgba(124,92,255,0.2);
+            margin-top: 50px;
+            padding: 35px 0 20px;
+        }
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            margin-top: 25px;
+            border-top: 1px solid rgba(124,92,255,0.15);
+            color: #7880aa;
+            font-size: 13px;
+            line-height:1.8;
         }
     </style>
 </head>
 <body>
-    <div class="top-status">
+    <div class="top-bar">
         <div class="container">
-            <span>在线人数：<i>236</i> 人</span>
-            <span>今日访问：<i>5218</i></span>
+            <div class="top-info">
+                <span>在线人数：实时统计</span>
+                <span>今日访问：流量自动统计</span>
+            </div>
         </div>
     </div>
 
     <header class="header">
         <div class="container nav">
-            <a href="index.html" class="nav-logo">小魔头同人创作平台</a>
+            <a href="index.html" class="nav-logo">同人创作平台</a>
+            <div class="nav-menu">
+                <a href="game.html">游戏资源</a>
+                <a href="mod.html">MOD模组</a>
+                <a href="play.html">在线游玩</a>
+                <a href="editor.html">创作工具</a>
+                <a href="forum.html">社区论坛</a>
+                <a href="tool.html">素材教程</a>
+                <a href="card.html">角色卡牌</a>
+            </div>
             <div class="login-btn">
-                <a href="login.html" class="btn">登录</a>
+                <a href="login.html" class="common-btn">登录</a>
             </div>
         </div>
     </header>
 
-    <div class="container">
-        <div class="auth-box">
-            <h2><i class="fa-solid fa-user-plus"></i> 用户注册</h2>
+    <div class="warn-bar">
+        同人创作交流专区 禁止违规传播 严格内容自查
+    </div>
 
-            <form>
+    <div class="container" style="padding: 20px 0 50px;">
+        <div class="auth-box">
+            <h2>📝 账号注册</h2>
+
+            <form id="registerForm">
                 <div class="form-group">
-                    <label>用户名</label>
-                    <input type="text" placeholder="请输入用户名">
+                    <label>用户昵称</label>
+                    <input type="text" id="registerUsername" placeholder="请输入昵称" required>
                 </div>
                 <div class="form-group">
                     <label>邮箱账号</label>
-                    <input type="email" placeholder="请输入邮箱">
+                    <input type="email" id="registerEmail" placeholder="请输入邮箱" required>
                 </div>
                 <div class="form-group">
-                    <label>登录密码</label>
-                    <input type="password" placeholder="请输入密码（至少6位）">
+                    <label>设置密码</label>
+                    <input type="password" id="registerPassword" placeholder="请设置密码 (至少6位)" required minlength="6">
                 </div>
                 <div class="form-group">
                     <label>确认密码</label>
-                    <input type="password" placeholder="请再次输入密码">
+                    <input type="password" id="registerConfirmPassword" placeholder="请再次输入密码" required minlength="6">
                 </div>
                 <button type="submit" class="auth-btn">立即注册</button>
             </form>
 
             <div class="auth-links">
-                已有账号？<a href="login.html">立即登录</a>
+                已有账号？ <a href="login.html">立即登录</a>
             </div>
         </div>
     </div>
 
     <footer class="footer">
         <div class="copyright">
-            <p>©2026 小魔头同人二创静态网站</p>
+            ©2026 同人创作交流平台 原创兴趣交流站点 | 严禁私自转载搬运
+            <br>本站仅作兴趣交流，所有内容均由用户自主创作发布
         </div>
     </footer>
 
-    <script src="js/script.js"></script>
+    <script>
+        // 注册表单处理
+        const registerForm = document.getElementById('registerForm');
+        if (registerForm) {
+            registerForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('registerUsername').value.trim();
+                const email = document.getElementById('registerEmail').value.trim();
+                const password = document.getElementById('registerPassword').value;
+                const confirmPassword = document.getElementById('registerConfirmPassword').value;
+                
+                // 验证密码
+                if (password !== confirmPassword) {
+                    alert('❌ 两次输入的密码不一致！');
+                    return;
+                }
+                
+                // 获取已存在的用户
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                
+                // 检查邮箱是否已被注册
+                if (users.find(u => u.email === email)) {
+                    alert('❌ 该邮箱已被注册！请直接登录');
+                    return;
+                }
+                
+                // 添加新用户
+                const newUser = {
+                    username: username,
+                    email: email,
+                    password: password,
+                    registerTime: new Date().toLocaleString()
+                };
+                
+                users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                alert('🎉 注册成功！\n\n欢迎加入，' + username + '\n请使用邮箱登录');
+                window.location.href = 'login.html';
+            });
+        }
+    </script>
 </body>
 </html>

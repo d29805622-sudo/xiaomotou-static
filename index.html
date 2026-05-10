@@ -514,7 +514,7 @@
                 <a href="tool.html">素材教程</a>
                 <a href="card.html">角色卡牌</a>
             </div>
-            <div class="login-btn">
+            <div class="login-btn" id="navButtons">
                 <a href="sign.html" class="sign-btn">每日签到</a>
                 <a href="user.html" class="common-btn">个人中心</a>
                 <a href="login.html" class="common-btn">登录</a>
@@ -704,6 +704,31 @@
         </div>
     </footer>
 
+    <script>
+        // 检查登录状态并更新导航栏
+        document.addEventListener('DOMContentLoaded', function() {
+            const navButtons = document.getElementById('navButtons');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (currentUser) {
+                // 已登录状态
+                navButtons.innerHTML = `
+                    <span style="color: #c0b4ff; margin-right: 10px; font-size: 14px;">👋 ${currentUser.username}</span>
+                    <a href="sign.html" class="sign-btn">每日签到</a>
+                    <a href="user.html" class="common-btn">个人中心</a>
+                    <a href="javascript:void(0);" class="common-btn" onclick="logout()">退出登录</a>
+                `;
+            }
+        });
+
+        // 退出登录函数
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('currentUser');
+                location.reload();
+            }
+        }
+    </script>
     <script src="js/script.js"></script>
 </body>
 </html>
