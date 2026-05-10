@@ -81,6 +81,28 @@
             gap:15px;
             padding:10px 0;
         }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .expand-top-btn {
+            background: rgba(138, 108, 255, 0.3);
+            border: 1px solid rgba(138, 108, 255, 0.5);
+            color: #c0b4ff;
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .expand-top-btn:hover {
+            background: linear-gradient(135deg, #6344e8, #a864ff);
+            color: white;
+        }
         .nav-logo {
             font-size: 24px;
             font-weight: 700;
@@ -427,6 +449,46 @@
             line-height:1.8;
         }
 
+        /* 可折叠顶部栏样式 */
+        .top-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .collapse-btn {
+            background: rgba(138, 108, 255, 0.3);
+            border: 1px solid rgba(138, 108, 255, 0.5);
+            color: #c0b4ff;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .collapse-btn:hover {
+            background: linear-gradient(135deg, #6344e8, #a864ff);
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .top-bar.collapsed {
+            height: 0;
+            padding: 0;
+            overflow: hidden;
+            border: none;
+        }
+        
+        .top-bar.collapsed .container {
+            display: none;
+        }
+        
         /* 响应式适配 */
         @media (max-width:768px){
             .nav{
@@ -493,13 +555,16 @@
     </style>
 </head>
 <body>
-    <div class="top-bar">
+    <div class="top-bar" id="topBar">
         <div class="container">
             <div class="top-info">
                 <span>在线人数：实时统计</span>
                 <span>今日访问：流量自动统计</span>
             </div>
-            <div class="theme-switch">切换显示模式</div>
+            <div class="top-controls">
+                <div class="theme-switch">切换显示模式</div>
+                <button class="collapse-btn" id="collapseBtn" title="收起顶部栏">−</button>
+            </div>
         </div>
     </div>
 
@@ -515,11 +580,16 @@
                 <a href="tool.html">素材教程</a>
                 <a href="card.html">角色卡牌</a>
             </div>
-            <div class="login-btn" id="navButtons">
-                <a href="sign.html" class="sign-btn">每日签到</a>
-                <a href="user.html" class="common-btn">个人中心</a>
-                <a href="login.html" class="common-btn">登录</a>
-                <a href="register.html" class="common-btn">注册</a>
+            <div class="nav-right">
+                <button class="expand-top-btn" id="expandTopBtn" title="显示/隐藏顶部栏" style="display: none;">
+                    顶部栏
+                </button>
+                <div class="login-btn" id="navButtons">
+                    <a href="sign.html" class="sign-btn">每日签到</a>
+                    <a href="user.html" class="common-btn">个人中心</a>
+                    <a href="login.html" class="common-btn">登录</a>
+                    <a href="register.html" class="common-btn">注册</a>
+                </div>
             </div>
         </div>
     </header>
@@ -705,6 +775,48 @@
         </div>
     </footer>
 
+    <script>
+        // 顶部栏折叠功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const topBar = document.getElementById('topBar');
+            const collapseBtn = document.getElementById('collapseBtn');
+            const expandTopBtn = document.getElementById('expandTopBtn');
+            
+            function updateCollapseState(collapsed) {
+                if (topBar) {
+                    if (collapsed) {
+                        topBar.classList.add('collapsed');
+                    } else {
+                        topBar.classList.remove('collapsed');
+                    }
+                }
+                if (collapseBtn) {
+                    collapseBtn.textContent = collapsed ? '+' : '−';
+                }
+                if (expandTopBtn) {
+                    expandTopBtn.style.display = collapsed ? 'inline-block' : 'none';
+                }
+            }
+            
+            function toggleCollapse() {
+                const currentCollapsed = topBar ? topBar.classList.contains('collapsed') : false;
+                const newCollapsed = !currentCollapsed;
+                updateCollapseState(newCollapsed);
+                localStorage.setItem('topBarCollapsed', newCollapsed);
+            }
+            
+            // 检查本地存储的状态
+            const isCollapsed = localStorage.getItem('topBarCollapsed') === 'true';
+            updateCollapseState(isCollapsed);
+            
+            if (collapseBtn) {
+                collapseBtn.addEventListener('click', toggleCollapse);
+            }
+            if (expandTopBtn) {
+                expandTopBtn.addEventListener('click', toggleCollapse);
+            }
+        });
+    </script>
     <script src="js/common.js"></script>
     <script src="js/script.js"></script>
 </body>
