@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>注册 - 同人创作交流平台</title>
     <link rel="stylesheet" href="css/ux-enhancements.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft Yahei", sans-serif; }
         body { background: #0c0e1a; color: #e8ebf2; line-height: 1.6; min-height: 100vh; }
@@ -145,6 +148,23 @@
     </footer>
 
     <script>
+        // Firebase 配置
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5KglKIReKoSCTb2oIsPM-ei2hWVSoJ94",
+            authDomain: "xmt-play.firebaseapp.com",
+            databaseURL: "https://xmt-play-default-rtdb.firebaseio.com",
+            projectId: "xmt-play",
+            storageBucket: "xmt-play.firebasestorage.app",
+            messagingSenderId: "157977593826",
+            appId: "1:157977593826:web:01c3715943552a579adbbb"
+        };
+
+        // 初始化 Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        // 顶部栏折叠
         document.addEventListener('DOMContentLoaded', function() {
             const topBar = document.getElementById('topBar');
             const collapseBtn = document.getElementById('collapseBtn');
@@ -158,9 +178,8 @@
             
             function toggleCollapse() {
                 const currentCollapsed = topBar?.classList.contains('collapsed') || false;
-                const newCollapsed = !currentCollapsed;
-                updateCollapseState(newCollapsed);
-                localStorage.setItem('topBarCollapsed', newCollapsed);
+                updateCollapseState(!currentCollapsed);
+                localStorage.setItem('topBarCollapsed', !currentCollapsed);
             }
             
             updateCollapseState(localStorage.getItem('topBarCollapsed') === 'true');
@@ -168,6 +187,7 @@
             expandTopBtn?.addEventListener('click', toggleCollapse);
         });
 
+        // 导航栏滚动自动隐藏
         (function() {
             let lastScrollY = 0;
             const header = document.getElementById('mainHeader');
@@ -186,56 +206,60 @@
             });
         })();
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const registerForm = document.getElementById('registerForm');
-            if (!registerForm) return;
+        // 注册表单提交
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            const usernameInput = document.getElementById('registerUsername');
-            const emailInput = document.getElementById('registerEmail');
-            const passwordInput = document.getElementById('registerPassword');
-            const confirmPasswordInput = document.getElementById('registerConfirmPassword');
+            const username = document.getElementById('registerUsername').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
             
-            registerForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const username = usernameInput.value.trim();
-                const email = emailInput.value.trim();
-                const password = passwordInput.value;
-                const confirmPassword = confirmPasswordInput.value;
-                
-                if (!username || !email || !password || !confirmPassword) {
-                    alert('⚠️ 请填写所有必填项');
-                    return;
-                }
-                
-                if (password.length < 6) {
-                    alert('⚠️ 密码至少需要 6 个字符');
-                    return;
-                }
-                
-                if (password !== confirmPassword) {
-                    alert('❌ 两次输入的密码不一致！');
-                    return;
-                }
-                
-                const users = JSON.parse(localStorage.getItem('users') || '[]');
-                
-                if (users.find(u => u.email === email)) {
-                    alert('❌ 该邮箱已被注册！请直接登录');
-                    return;
-                }
-                
-                users.push({
-                    username: username,
-                    email: email,
-                    password: password,
-                    registerTime: new Date().toLocaleString()
+            if (!username || !email || !password || !confirmPassword) {
+                alert('⚠️ 请填写所有必填项');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('⚠️ 密码至少需要 6 个字符');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                alert('❌ 两次输入的密码不一致！');
+                return;
+            }
+            
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(async (userCredential) => {
+                    const user = userCredential.user;
+                    
+                    // 保存用户数据到数据库
+                    await db.ref('users/' + user.uid).set({
+                        username: username,
+                        email: email,
+                        createdAt: firebase.database.ServerValue.TIMESTAMP,
+                        stats: {
+                            posts: 0,
+                            favorites: 0,
+                            points: 0,
+                            signDays: 0
+                        }
+                    });
+                    
+                    // 保存到本地
+                    localStorage.setItem('currentUser', JSON.stringify({
+                        uid: user.uid,
+                        email: user.email,
+                        username: username
+                    }));
+                    
+                    alert('🎉 注册成功！欢迎加入！');
+                    setTimeout(() => window.location.href = 'login.html', 1500);
+                })
+                .catch((error) => {
+                    alert('❌ 注册失败：' + error.message);
                 });
-                
-                localStorage.setItem('users', JSON.stringify(users));
-                alert('🎉 注册成功！欢迎加入！');
-                setTimeout(() => window.location.href = 'login.html', 1500);
-            });
         });
     </script>
 </body>

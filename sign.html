@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="referrer" content="never">
     <title>每日签到 - 同人创作交流平台</title>
     <link rel="stylesheet" href="css/ux-enhancements.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft Yahei", sans-serif; }
         body { background: #0c0e1a; color: #e8ebf2; line-height: 1.6; min-height: 100vh; }
@@ -143,6 +143,22 @@
     </footer>
 
     <script>
+        // Firebase 配置
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5KglKIReKoSCTb2oIsPM-ei2hWVSoJ94",
+            authDomain: "xmt-play.firebaseapp.com",
+            databaseURL: "https://xmt-play-default-rtdb.firebaseio.com",
+            projectId: "xmt-play",
+            storageBucket: "xmt-play.firebasestorage.app",
+            messagingSenderId: "157977593826",
+            appId: "1:157977593826:web:01c3715943552a579adbbb"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        // 顶部栏折叠
         document.addEventListener('DOMContentLoaded', function() {
             const topBar = document.getElementById('topBar');
             const collapseBtn = document.getElementById('collapseBtn');
@@ -156,9 +172,8 @@
             
             function toggleCollapse() {
                 const currentCollapsed = topBar?.classList.contains('collapsed') || false;
-                const newCollapsed = !currentCollapsed;
-                updateCollapseState(newCollapsed);
-                localStorage.setItem('topBarCollapsed', newCollapsed);
+                updateCollapseState(!currentCollapsed);
+                localStorage.setItem('topBarCollapsed', !currentCollapsed);
             }
             
             updateCollapseState(localStorage.getItem('topBarCollapsed') === 'true');
@@ -166,6 +181,7 @@
             expandTopBtn?.addEventListener('click', toggleCollapse);
         });
 
+        // 导航栏滚动自动隐藏
         (function() {
             let lastScrollY = 0;
             const header = document.getElementById('mainHeader');
@@ -217,51 +233,55 @@
             return html;
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        // 检查登录状态并加载签到数据
+        auth.onAuthStateChanged(async function(user) {
             const signContent = document.getElementById('signContent');
-            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
             
-            if (!currentUser) {
+            if (!user) {
                 signContent.innerHTML = '<div class="not-login"><p>🔒 需要登录后才能进行签到</p><a href="login.html">立即登录</a></div>';
                 return;
             }
             
             const today = new Date().toISOString().split('T')[0];
-            const localSignData = JSON.parse(localStorage.getItem('signData_' + currentUser.email) || '{"dates":[],"streak":0}');
-            const streak = localSignData.streak || 0;
-            const totalDays = localSignData.dates.length;
-            const signedDates = localSignData.dates || [];
+            const signRef = db.ref('signData/' + user.uid);
+            const snapshot = await signRef.once('value');
+            const signData = snapshot.val() || { dates: [], streak: 0 };
+            const streak = signData.streak || 0;
+            const totalDays = signData.dates ? signData.dates.length : 0;
+            const signedDates = signData.dates || [];
             const hasSignedToday = signedDates.includes(today);
             
             signContent.innerHTML = '<div class="sign-status"><p>连续签到 <span class="streak">' + streak + '</span> 天</p><p>累计签到 <span class="total">' + totalDays + '</span> 天</p></div><div class="sign-btn-area"><button class="sign-button ' + (hasSignedToday ? 'disabled' : 'available') + '" id="signButton">' + (hasSignedToday ? '✓ 今日已签到' : '点击签到') + '</button></div><div class="calendar-box">' + generateCalendar(signedDates) + '</div>';
             
             const signButton = document.getElementById('signButton');
             if (signButton && !hasSignedToday) {
-                signButton.addEventListener('click', function() {
-                    const localSignData = JSON.parse(localStorage.getItem('signData_' + currentUser.email) || '{"dates":[],"streak":0}');
-                    const today = new Date().toISOString().split('T')[0];
+                signButton.addEventListener('click', async function() {
+                    const newDates = [...signedDates];
+                    newDates.push(today);
                     
-                    if (!localSignData.dates.includes(today)) {
-                        localSignData.dates.push(today);
-                        
-                        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-                        if (localSignData.dates.includes(yesterday)) {
-                            localSignData.streak = (localSignData.streak || 0) + 1;
-                        } else {
-                            localSignData.streak = 1;
-                        }
-                        
-                        localStorage.setItem('signData_' + currentUser.email, JSON.stringify(localSignData));
-                        
-                        let userStats = JSON.parse(localStorage.getItem('userStats_' + currentUser.email) || '{"points":0,"posts":0,"favorites":0,"signDays":0}');
-                        const points = 5 + Math.min(localSignData.streak * 2, 15);
-                        userStats.points = (userStats.points || 0) + points;
-                        userStats.signDays = localSignData.dates.length;
-                        localStorage.setItem('userStats_' + currentUser.email, JSON.stringify(userStats));
-                        
-                        alert('🎉 签到成功！连续' + localSignData.streak + '天，获得' + points + '积分！');
-                        window.location.reload();
-                    }
+                    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+                    const newStreak = signedDates.includes(yesterday) ? streak + 1 : 1;
+                    
+                    await signRef.set({
+                        dates: newDates,
+                        streak: newStreak,
+                        lastSignDate: today
+                    });
+                    
+                    // 更新用户积分
+                    const userRef = db.ref('users/' + user.uid);
+                    const userSnapshot = await userRef.once('value');
+                    const userData = userSnapshot.val() || {};
+                    const currentPoints = userData.stats?.points || 0;
+                    const points = 5 + Math.min(newStreak * 2, 15);
+                    
+                    await userRef.update({
+                        'stats/points': currentPoints + points,
+                        'stats/signDays': newDates.length
+                    });
+                    
+                    alert('🎉 签到成功！连续' + newStreak + '天，获得' + points + '积分！');
+                    window.location.reload();
                 });
             }
         });

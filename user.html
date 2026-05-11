@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>个人中心 - 同人创作交流平台</title>
     <link rel="stylesheet" href="css/ux-enhancements.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft Yahei", sans-serif; }
         body { background: #0c0e1a; color: #e8ebf2; line-height: 1.6; min-height: 100vh; }
@@ -148,6 +151,22 @@
     </footer>
 
     <script>
+        // Firebase 配置
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5KglKIReKoSCTb2oIsPM-ei2hWVSoJ94",
+            authDomain: "xmt-play.firebaseapp.com",
+            databaseURL: "https://xmt-play-default-rtdb.firebaseio.com",
+            projectId: "xmt-play",
+            storageBucket: "xmt-play.firebasestorage.app",
+            messagingSenderId: "157977593826",
+            appId: "1:157977593826:web:01c3715943552a579adbbb"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        // 顶部栏折叠
         document.addEventListener('DOMContentLoaded', function() {
             const topBar = document.getElementById('topBar');
             const collapseBtn = document.getElementById('collapseBtn');
@@ -161,9 +180,8 @@
             
             function toggleCollapse() {
                 const currentCollapsed = topBar?.classList.contains('collapsed') || false;
-                const newCollapsed = !currentCollapsed;
-                updateCollapseState(newCollapsed);
-                localStorage.setItem('topBarCollapsed', newCollapsed);
+                updateCollapseState(!currentCollapsed);
+                localStorage.setItem('topBarCollapsed', !currentCollapsed);
             }
             
             updateCollapseState(localStorage.getItem('topBarCollapsed') === 'true');
@@ -171,6 +189,7 @@
             expandTopBtn?.addEventListener('click', toggleCollapse);
         });
 
+        // 导航栏滚动自动隐藏
         (function() {
             let lastScrollY = 0;
             const header = document.getElementById('mainHeader');
@@ -189,63 +208,94 @@
             });
         })();
 
-        document.addEventListener('DOMContentLoaded', function() {
+        // 检查登录状态
+        auth.onAuthStateChanged(async function(user) {
             const profileContainer = document.getElementById('profileContainer');
-            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
             
-            if (!currentUser) {
+            if (!user) {
                 profileContainer.innerHTML = '<div style="grid-column: 1 / -1;" class="not-login"><p>🔒 需要登录后才能访问个人中心</p><a href="login.html">立即登录</a></div>';
                 return;
             }
             
-            const userStats = JSON.parse(localStorage.getItem('userStats_' + currentUser.email) || '{"posts":0,"favorites":0,"points":0,"signDays":0}');
-            const favorites = JSON.parse(localStorage.getItem('favorites_' + currentUser.email) || '[]');
+            // 获取用户数据
+            const snapshot = await db.ref('users/' + user.uid).once('value');
+            const userData = snapshot.val() || {};
+            const stats = userData.stats || { posts: 0, favorites: 0, points: 0, signDays: 0 };
             
-            profileContainer.innerHTML = '<aside class="sidebar"><div class="avatar-section"><div class="avatar">' + (currentUser.username?.charAt(0) || 'U') + '</div><div class="username">' + (currentUser.username || '用户') + '</div><div class="user-email">' + currentUser.email + '</div></div><ul class="side-menu"><li><a class="active" onclick="showSection(\'info\')">个人信息</a></li><li><a onclick="showSection(\'stats\')">数据统计</a></li><li><a onclick="showSection(\'favorites\')">我的收藏</a></li><li><a onclick="logout()">退出登录</a></li></ul></aside><main class="main-content"><div id="contentArea"></div></main>';
+            profileContainer.innerHTML = '<aside class="sidebar"><div class="avatar-section"><div class="avatar">' + (userData.username?.charAt(0) || 'U') + '</div><div class="username">' + (userData.username || user.email.split('@')[0]) + '</div><div class="user-email">' + user.email + '</div></div><ul class="side-menu"><li><a class="active" onclick="showSection(\'info\')">个人信息</a></li><li><a onclick="showSection(\'stats\')">数据统计</a></li><li><a onclick="showSection(\'favorites\')">我的收藏</a></li><li><a onclick="logout()">退出登录</a></li></ul></aside><main class="main-content"><div id="contentArea"></div></main>';
             
             showSection('info');
         });
 
         function showSection(section) {
             const contentArea = document.getElementById('contentArea');
-            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-            if (!currentUser) return;
             
-            const userStats = JSON.parse(localStorage.getItem('userStats_' + currentUser.email) || '{"posts":0,"favorites":0,"points":0,"signDays":0}');
-            const favorites = JSON.parse(localStorage.getItem('favorites_' + currentUser.email) || '[]');
-            
-            if (section === 'info') {
-                contentArea.innerHTML = '<h3 class="content-title">个人信息</h3><form class="info-form"><div class="form-group"><label>用户名</label><input type="text" value="' + (currentUser.username || '') + '" readonly></div><div class="form-group"><label>邮箱</label><input type="email" value="' + currentUser.email + '" readonly></div><div class="form-group"><label>个性签名</label><textarea placeholder="写下你的个性签名..."></textarea></div><button type="submit" class="submit-btn">保存修改</button></form>';
-            } else if (section === 'stats') {
-                contentArea.innerHTML = '<h3 class="content-title">数据统计</h3><div class="stats-grid"><div class="stat-card"><div class="stat-value">' + (userStats.posts || 0) + '</div><div class="stat-label">发布帖子</div></div><div class="stat-card"><div class="stat-value">' + (userStats.favorites || 0) + '</div><div class="stat-label">收藏内容</div></div><div class="stat-card"><div class="stat-value">' + (userStats.points || 0) + '</div><div class="stat-label">积分</div></div><div class="stat-card"><div class="stat-value">' + (userStats.signDays || 0) + '</div><div class="stat-label">签到天数</div></div></div>';
-            } else if (section === 'favorites') {
-                if (favorites.length === 0) {
-                    contentArea.innerHTML = '<h3 class="content-title">我的收藏</h3><p style="color:#8991bc;">暂无收藏内容</p>';
-                } else {
-                    let favoritesHtml = favorites.map((item, index) => '<div class="favorite-item"><h4>' + (item.title || '收藏项 ' + (index + 1)) + '</h4><p>' + (item.description || '') + '</p><button class="remove-favorite" onclick="removeFavorite(\'' + item.id + '\')">取消收藏</button></div>').join('');
-                    contentArea.innerHTML = '<h3 class="content-title">我的收藏</h3><div class="favorites-list">' + favoritesHtml + '</div>';
+            auth.onAuthStateChanged(async function(user) {
+                if (!user) return;
+                
+                const snapshot = await db.ref('users/' + user.uid).once('value');
+                const userData = snapshot.val() || {};
+                const stats = userData.stats || { posts: 0, favorites: 0, points: 0, signDays: 0 };
+                
+                if (section === 'info') {
+                    contentArea.innerHTML = '<h3 class="content-title">个人信息</h3><form class="info-form"><div class="form-group"><label>用户名</label><input type="text" value="' + (userData.username || '') + '" id="usernameInput"></div><div class="form-group"><label>邮箱</label><input type="email" value="' + user.email + '" readonly></div><div class="form-group"><label>个性签名</label><textarea placeholder="写下你的个性签名..." id="bioInput">' + (userData.bio || '') + '</textarea></div><button type="button" class="submit-btn" onclick="saveProfile()">保存修改</button></form>';
+                } else if (section === 'stats') {
+                    contentArea.innerHTML = '<h3 class="content-title">数据统计</h3><div class="stats-grid"><div class="stat-card"><div class="stat-value">' + (stats.posts || 0) + '</div><div class="stat-label">发布帖子</div></div><div class="stat-card"><div class="stat-value">' + (stats.favorites || 0) + '</div><div class="stat-label">收藏内容</div></div><div class="stat-card"><div class="stat-value">' + (stats.points || 0) + '</div><div class="stat-label">积分</div></div><div class="stat-card"><div class="stat-value">' + (stats.signDays || 0) + '</div><div class="stat-label">签到天数</div></div></div>';
+                } else if (section === 'favorites') {
+                    const favSnapshot = await db.ref('favorites/' + user.uid).once('value');
+                    const favorites = favSnapshot.val() || [];
+                    
+                    if (favorites.length === 0) {
+                        contentArea.innerHTML = '<h3 class="content-title">我的收藏</h3><p style="color:#8991bc;">暂无收藏内容</p>';
+                    } else {
+                        let favoritesHtml = favorites.map((item, index) => '<div class="favorite-item"><h4>' + (item.title || '收藏项 ' + (index + 1)) + '</h4><p>' + (item.description || '') + '</p><button class="remove-favorite" onclick="removeFavorite(\'' + item.id + '\')">取消收藏</button></div>').join('');
+                        contentArea.innerHTML = '<h3 class="content-title">我的收藏</h3><div class="favorites-list">' + favoritesHtml + '</div>';
+                    }
                 }
-            }
+            });
         }
 
-        function removeFavorite(itemId) {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-            const favorites = JSON.parse(localStorage.getItem('favorites_' + currentUser.email) || '[]');
-            const filtered = favorites.filter(f => f.id !== itemId);
-            localStorage.setItem('favorites_' + currentUser.email, JSON.stringify(filtered));
+        async function saveProfile() {
+            const user = auth.currentUser;
+            if (!user) return;
             
-            const userStats = JSON.parse(localStorage.getItem('userStats_' + currentUser.email) || '{"posts":0,"favorites":0,"points":0,"signDays":0}');
-            userStats.favorites = filtered.length;
-            localStorage.setItem('userStats_' + currentUser.email, JSON.stringify(userStats));
+            const username = document.getElementById('usernameInput').value.trim();
+            const bio = document.getElementById('bioInput').value.trim();
+            
+            await db.ref('users/' + user.uid).update({
+                username: username,
+                bio: bio
+            });
+            
+            alert('✅ 个人资料已保存！');
+        }
+
+        async function removeFavorite(itemId) {
+            const user = auth.currentUser;
+            if (!user) return;
+            
+            const favSnapshot = await db.ref('favorites/' + user.uid).once('value');
+            const favorites = favSnapshot.val() || [];
+            const filtered = favorites.filter(f => f.id !== itemId);
+            
+            await db.ref('favorites/' + user.uid).set(filtered);
+            
+            // 更新用户统计
+            const userSnapshot = await db.ref('users/' + user.uid).once('value');
+            const userData = userSnapshot.val() || {};
+            const stats = userData.stats || { posts: 0, favorites: 0, points: 0, signDays: 0 };
+            stats.favorites = filtered.length;
+            await db.ref('users/' + user.uid + '/stats').update(stats);
             
             alert('已取消收藏');
             showSection('favorites');
         }
 
         function logout() {
-            localStorage.removeItem('currentUser');
-            alert('已退出登录');
-            window.location.href = 'index.html';
+            auth.signOut().then(() => {
+                alert('已退出登录');
+                window.location.href = 'index.html';
+            });
         }
     </script>
 </body>

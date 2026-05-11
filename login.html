@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>登录 - 同人创作交流平台</title>
     <link rel="stylesheet" href="css/ux-enhancements.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft Yahei", sans-serif; }
         body { background: #0c0e1a; color: #e8ebf2; line-height: 1.6; min-height: 100vh; }
@@ -61,6 +64,7 @@
         .tool-item { width: 42px; height: 42px; border-radius: 50%; background: rgba(35,38,70,0.8); backdrop-filter: blur(8px); border: 1px solid rgba(124,92,255,0.3); color: #c8bfff; text-align: center; line-height: 42px; box-shadow: 0 4px 16px rgba(0,0,0,0.25); font-size:14px; cursor:pointer; }
         .kanban { position: fixed; right: 15px; bottom: 30px; z-index: 997; cursor:pointer; }
         .kanban img { width:75px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.35); border: 1px solid rgba(130,100,255,0.25); }
+        .loading { text-align: center; padding: 60px; color: #a898ff; }
     </style>
 </head>
 <body>
@@ -91,7 +95,7 @@
             </div>
             <div class="nav-right">
                 <button class="expand-top-btn" id="expandTopBtn">顶部栏</button>
-                <div class="login-btn">
+                <div class="login-btn" id="navButtons">
                     <a href="sign.html" class="sign-btn">每日签到</a>
                     <a href="user.html" class="common-btn">个人中心</a>
                     <a href="login.html" class="common-btn">登录</a>
@@ -108,8 +112,8 @@
             <h2>👤 用户登录</h2>
             
             <div class="oauth-btns">
-                <button class="oauth-btn" onclick="alert('GitHub登录功能开发中...')">GitHub登录</button>
-                <button class="oauth-btn" onclick="alert('Google登录功能开发中...')">Google登录</button>
+                <button class="oauth-btn" id="githubLogin">GitHub登录</button>
+                <button class="oauth-btn" id="googleLogin">Google登录</button>
             </div>
 
             <div class="divider"><span>或使用邮箱登录</span></div>
@@ -151,6 +155,23 @@
     </footer>
 
     <script>
+        // Firebase 配置
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5KglKIReKoSCTb2oIsPM-ei2hWVSoJ94",
+            authDomain: "xmt-play.firebaseapp.com",
+            databaseURL: "https://xmt-play-default-rtdb.firebaseio.com",
+            projectId: "xmt-play",
+            storageBucket: "xmt-play.firebasestorage.app",
+            messagingSenderId: "157977593826",
+            appId: "1:157977593826:web:01c3715943552a579adbbb"
+        };
+
+        // 初始化 Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        // 顶部栏折叠
         document.addEventListener('DOMContentLoaded', function() {
             const topBar = document.getElementById('topBar');
             const collapseBtn = document.getElementById('collapseBtn');
@@ -164,9 +185,8 @@
             
             function toggleCollapse() {
                 const currentCollapsed = topBar?.classList.contains('collapsed') || false;
-                const newCollapsed = !currentCollapsed;
-                updateCollapseState(newCollapsed);
-                localStorage.setItem('topBarCollapsed', newCollapsed);
+                updateCollapseState(!currentCollapsed);
+                localStorage.setItem('topBarCollapsed', !currentCollapsed);
             }
             
             updateCollapseState(localStorage.getItem('topBarCollapsed') === 'true');
@@ -174,6 +194,7 @@
             expandTopBtn?.addEventListener('click', toggleCollapse);
         });
 
+        // 导航栏滚动自动隐藏
         (function() {
             let lastScrollY = 0;
             const header = document.getElementById('mainHeader');
@@ -192,42 +213,104 @@
             });
         })();
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const loginForm = document.getElementById('loginForm');
-            if (!loginForm) return;
+        // 邮箱密码登录
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            const emailInput = document.getElementById('loginEmail');
-            const passwordInput = document.getElementById('loginPassword');
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
             
-            emailInput.addEventListener('input', function() {
-                this.style.borderColor = this.value && !this.checkValidity() ? '#ff6b6b' : 'rgba(124,92,255,0.3)';
-            });
+            if (!email || !password) {
+                alert('⚠️ 请填写完整的邮箱和密码');
+                return;
+            }
             
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const email = emailInput.value.trim();
-                const password = passwordInput.value;
-                
-                if (!email || !password) {
-                    alert('⚠️ 请填写完整的邮箱和密码');
-                    return;
-                }
-                
-                const users = JSON.parse(localStorage.getItem('users') || '[]');
-                const matchedUser = users.find(u => u.email === email && u.password === password);
-                
-                if (matchedUser) {
+            auth.signInWithEmailAndPassword(email, password)
+                .then(async (userCredential) => {
+                    const user = userCredential.user;
+                    
+                    // 保存到本地
                     localStorage.setItem('currentUser', JSON.stringify({
-                        email: matchedUser.email,
-                        username: matchedUser.username
+                        uid: user.uid,
+                        email: user.email
                     }));
+                    
+                    // 获取用户名
+                    const snapshot = await db.ref('users/' + user.uid).once('value');
+                    const userData = snapshot.val();
+                    
+                    localStorage.setItem('currentUser', JSON.stringify({
+                        uid: user.uid,
+                        email: user.email,
+                        username: userData?.username || user.email.split('@')[0]
+                    }));
+                    
                     alert('🎉 登录成功！欢迎回来！');
                     setTimeout(() => window.location.href = 'index.html', 1500);
-                } else {
-                    alert('❌ 邮箱或密码错误，请先注册账号');
-                }
-            });
+                })
+                .catch((error) => {
+                    alert('❌ 登录失败：' + error.message);
+                });
+        });
+
+        // Google登录
+        document.getElementById('googleLogin').addEventListener('click', function() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            
+            auth.signInWithPopup(provider)
+                .then(async (result) => {
+                    const user = result.user;
+                    
+                    // 保存到本地
+                    localStorage.setItem('currentUser', JSON.stringify({
+                        uid: user.uid,
+                        email: user.email,
+                        username: user.displayName || user.email.split('@')[0]
+                    }));
+                    
+                    // 保存用户数据到数据库
+                    await db.ref('users/' + user.uid).update({
+                        email: user.email,
+                        username: user.displayName || user.email.split('@')[0],
+                        photoURL: user.photoURL
+                    });
+                    
+                    alert('🎉 Google登录成功！');
+                    setTimeout(() => window.location.href = 'index.html', 1500);
+                })
+                .catch((error) => {
+                    alert('❌ 登录失败：' + error.message);
+                });
+        });
+
+        // GitHub登录
+        document.getElementById('githubLogin').addEventListener('click', function() {
+            const provider = new firebase.auth.GithubAuthProvider();
+            provider.addScope('read:user');
+            
+            auth.signInWithPopup(provider)
+                .then(async (result) => {
+                    const user = result.user;
+                    const credential = result.credential;
+                    
+                    localStorage.setItem('currentUser', JSON.stringify({
+                        uid: user.uid,
+                        email: user.email,
+                        username: user.displayName || user.email.split('@')[0]
+                    }));
+                    
+                    await db.ref('users/' + user.uid).update({
+                        email: user.email,
+                        username: user.displayName || user.email.split('@')[0],
+                        photoURL: user.photoURL
+                    });
+                    
+                    alert('🎉 GitHub登录成功！');
+                    setTimeout(() => window.location.href = 'index.html', 1500);
+                })
+                .catch((error) => {
+                    alert('❌ 登录失败：' + error.message);
+                });
         });
     </script>
 </body>
