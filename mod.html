@@ -451,6 +451,17 @@
                 text-align:center;
             }
         }
+        .header.hidden {
+            transform: translateY(-100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+        .header.visible {
+            transform: translateY(0);
+            position: sticky;
+        }
     </style>
 </head>
 <body>
@@ -467,7 +478,7 @@
         </div>
     </div>
 
-    <header class="header">
+    <header class="header" id="mainHeader">
         <div class="container nav">
             <a href="index.html" class="nav-logo">同人创作平台</a>
             <div class="nav-menu">
@@ -632,6 +643,41 @@
     <script src="js/common.js"></script>
     <script src="js/script.js"></script>
     <script>
+        (function() {
+            let lastScrollY = 0;
+            const header = document.getElementById('mainHeader');
+            if (!header) return;
+            const scrollThreshold = 100;
+            let ticking = false;
+            
+            function handleScroll() {
+                const currentScrollY = window.scrollY;
+                if (currentScrollY > lastScrollY && currentScrollY > scrollThreshold) {
+                    if (!header.classList.contains('hidden')) {
+                        header.classList.remove('visible');
+                        header.classList.add('hidden');
+                    }
+                } else if (currentScrollY < lastScrollY) {
+                    if (header.classList.contains('hidden')) {
+                        header.classList.remove('hidden');
+                        header.classList.add('visible');
+                    }
+                }
+                lastScrollY = currentScrollY;
+            }
+            
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    window.requestAnimationFrame(function() {
+                        handleScroll();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+        })();
+    </script>
+    <script>
         // 顶部栏折叠功能
         document.addEventListener('DOMContentLoaded', function() {
             const topBar = document.getElementById('topBar');
@@ -672,6 +718,41 @@
                 expandTopBtn.addEventListener('click', toggleCollapse);
             }
         });
+    </script>
+    <script>
+        (function() {
+            let lastScrollY = 0;
+            const header = document.getElementById('mainHeader');
+            if (!header) return;
+            const scrollThreshold = 100;
+            let ticking = false;
+            
+            function handleScroll() {
+                const currentScrollY = window.scrollY;
+                if (currentScrollY > lastScrollY && currentScrollY > scrollThreshold) {
+                    if (!header.classList.contains('hidden')) {
+                        header.classList.remove('visible');
+                        header.classList.add('hidden');
+                    }
+                } else if (currentScrollY < lastScrollY) {
+                    if (header.classList.contains('hidden')) {
+                        header.classList.remove('hidden');
+                        header.classList.add('visible');
+                    }
+                }
+                lastScrollY = currentScrollY;
+            }
+            
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    window.requestAnimationFrame(function() {
+                        handleScroll();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+        })();
     </script>
 </body>
 </html>

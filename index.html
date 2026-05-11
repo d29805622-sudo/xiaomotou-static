@@ -43,6 +43,7 @@
             border-bottom: 1px solid rgba(138, 108, 255, 0.2);
             padding: 8px 0;
             font-size: 14px;
+            transition: all 0.3s ease;
         }
         .top-bar .container {
             display: flex;
@@ -55,6 +56,11 @@
             margin-right: 20px;
             color: #b0b8d4;
         }
+        .top-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         .theme-switch {
             cursor: pointer;
             padding: 4px 12px;
@@ -62,24 +68,95 @@
             background: linear-gradient(135deg,#6344e8,#a864ff);
             font-size: 13px;
         }
+        .collapse-btn {
+            background: rgba(138, 108, 255, 0.3);
+            border: 1px solid rgba(138, 108, 255, 0.5);
+            color: #c0b4ff;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .collapse-btn:hover {
+            background: linear-gradient(135deg, #6344e8, #a864ff);
+            color: white;
+        }
+        .top-bar.collapsed {
+            height: 0;
+            padding: 0;
+            overflow: hidden;
+            border: none;
+        }
+        .top-bar.collapsed .container {
+            display: none;
+        }
 
-        /* 导航栏 */
+        /* 导航栏 - 滚动时自动收起 */
         .header {
-            background: rgba(18, 21, 39, 0.75);
+            background: rgba(18, 21, 39, 0.95);
             backdrop-filter: blur(16px);
             position: sticky;
             top: 0;
             z-index: 999;
             border-bottom: 1px solid rgba(124, 92, 255, 0.18);
+            transition: all 0.3s ease;
         }
+        
+        .header.hidden {
+            transform: translateY(-100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+        
+        .header.visible {
+            transform: translateY(0);
+            position: sticky;
+        }
+        
         .nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            min-height: 70px;
+            min-height: 60px;
             flex-wrap: wrap;
             gap:15px;
-            padding:10px 0;
+            padding:8px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-logo {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(90deg,#7c62ff,#e288ff);
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .nav-menu a {
+            color: #c5cbe8;
+            padding: 8px 14px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        .nav-menu a:hover {
+            background: rgba(124, 92, 255, 0.25);
+            color: #fff;
         }
         
         .nav-right {
@@ -97,58 +174,32 @@
             font-size: 13px;
             cursor: pointer;
             transition: all 0.2s ease;
+            display: none;
         }
-        
         .expand-top-btn:hover {
             background: linear-gradient(135deg, #6344e8, #a864ff);
             color: white;
         }
-        .nav-logo {
-            font-size: 24px;
-            font-weight: 700;
-            background: linear-gradient(90deg,#7c62ff,#e288ff);
-            -webkit-background-clip: text;
-            color: transparent;
-            letter-spacing: 2px;
-        }
-        .nav-menu a {
-            color: #c5cbe8;
-            margin: 0 8px;
-            padding: 7px 12px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            font-size: 15px;
-            display:inline-block;
-        }
-        .nav-menu a:hover {
-            background: rgba(124, 92, 255, 0.25);
-            color: #fff;
-            box-shadow: 0 0 12px rgba(124, 92, 255, 0.35);
-        }
+        
         .login-btn {
             display:flex;
             flex-wrap:wrap;
             gap:8px;
         }
-        .login-btn a {
-            padding: 8px 16px;
-            border-radius: 24px;
-            font-size: 14px;
-            transition: 0.3s;
-            white-space: nowrap;
-        }
         .sign-btn {
             background: linear-gradient(135deg,#4834d4,#8356f9);
             color: #fff;
-            box-shadow: 0 4px 14px rgba(100,70,240,0.3);
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-size: 14px;
         }
         .common-btn {
             border: 1px solid rgba(138,108,255,0.4);
             color: #d0c8ff;
             background: transparent;
-        }
-        .common-btn:hover {
-            background: rgba(138,108,255,0.2);
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-size: 14px;
         }
 
         /* 警示条 */
@@ -240,7 +291,6 @@
             color: #fff;
             font-size: 15px;
             cursor: pointer;
-            box-shadow: 0 4px 14px rgba(90,60,220,0.3);
         }
         .search-filter {
             margin-top: 15px;
@@ -449,46 +499,6 @@
             line-height:1.8;
         }
 
-        /* 可折叠顶部栏样式 */
-        .top-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .collapse-btn {
-            background: rgba(138, 108, 255, 0.3);
-            border: 1px solid rgba(138, 108, 255, 0.5);
-            color: #c0b4ff;
-            border-radius: 50%;
-            width: 26px;
-            height: 26px;
-            font-size: 18px;
-            line-height: 1;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .collapse-btn:hover {
-            background: linear-gradient(135deg, #6344e8, #a864ff);
-            color: white;
-            transform: scale(1.1);
-        }
-        
-        .top-bar.collapsed {
-            height: 0;
-            padding: 0;
-            overflow: hidden;
-            border: none;
-        }
-        
-        .top-bar.collapsed .container {
-            display: none;
-        }
-        
         /* 响应式适配 */
         @media (max-width:768px){
             .nav{
@@ -568,7 +578,7 @@
         </div>
     </div>
 
-    <header class="header">
+    <header class="header" id="mainHeader">
         <div class="container nav">
             <a href="index.html" class="nav-logo">同人创作平台</a>
             <div class="nav-menu">
@@ -581,7 +591,7 @@
                 <a href="card.html">角色卡牌</a>
             </div>
             <div class="nav-right">
-                <button class="expand-top-btn" id="expandTopBtn" title="显示/隐藏顶部栏" style="display: none;">
+                <button class="expand-top-btn" id="expandTopBtn" title="显示/隐藏顶部栏">
                     顶部栏
                 </button>
                 <div class="login-btn" id="navButtons">
@@ -776,8 +786,47 @@
     </footer>
 
     <script>
-        // 顶部栏折叠功能
-        document.addEventListener('DOMContentLoaded', function() {
+        // 导航栏滚动自动隐藏/显示功能
+        (function() {
+            let lastScrollY = 0;
+            const header = document.getElementById('mainHeader');
+            const scrollThreshold = 100;
+            let isUserScrolling = false;
+            
+            function handleScroll() {
+                const currentScrollY = window.scrollY;
+                
+                // 向下滚动超过阈值，隐藏导航栏
+                if (currentScrollY > lastScrollY && currentScrollY > scrollThreshold) {
+                    if (!header.classList.contains('hidden')) {
+                        header.classList.remove('visible');
+                        header.classList.add('hidden');
+                    }
+                } 
+                // 向上滚动，显示导航栏
+                else if (currentScrollY < lastScrollY) {
+                    if (header.classList.contains('hidden')) {
+                        header.classList.remove('hidden');
+                        header.classList.add('visible');
+                    }
+                }
+                
+                lastScrollY = currentScrollY;
+            }
+            
+            // 使用 requestAnimationFrame 优化性能
+            let ticking = false;
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    window.requestAnimationFrame(function() {
+                        handleScroll();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+            
+            // 顶部栏折叠功能
             const topBar = document.getElementById('topBar');
             const collapseBtn = document.getElementById('collapseBtn');
             const expandTopBtn = document.getElementById('expandTopBtn');
@@ -805,7 +854,6 @@
                 localStorage.setItem('topBarCollapsed', newCollapsed);
             }
             
-            // 检查本地存储的状态
             const isCollapsed = localStorage.getItem('topBarCollapsed') === 'true';
             updateCollapseState(isCollapsed);
             
@@ -815,7 +863,7 @@
             if (expandTopBtn) {
                 expandTopBtn.addEventListener('click', toggleCollapse);
             }
-        });
+        })();
     </script>
     <script src="js/common.js"></script>
     <script src="js/script.js"></script>

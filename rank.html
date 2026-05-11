@@ -47,6 +47,17 @@
         .copyright { text-align: center; padding-top: 20px; margin-top: 25px; border-top: 1px solid rgba(124,92,255,0.15); color: #7880aa; font-size: 13px; line-height: 1.8; }
         @media (max-width:768px){ .nav{ flex-direction:column; text-align:center; } .nav-menu{ text-align:center; } .top-info span{ font-size:13px; margin-right:10px; } h2{ font-size:19px; } }
         @media (max-width:480px){ .nav-logo{ font-size:20px; } .nav-menu a{ font-size:13px; margin:3px; padding:5px 8px; } .login-btn a{ padding:6px 12px; font-size:12px; } .float-tool{ right:8px; } .kanban img{ width:60px; } .footer-wrap{ flex-direction:column; text-align:center; } }
+        .header.hidden {
+            transform: translateY(-100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+        .header.visible {
+            transform: translateY(0);
+            position: sticky;
+        }
     </style>
 </head>
 <body>
@@ -62,7 +73,7 @@
             </div>
         </div>
     </div>
-    <header class="header">
+    <header class="header" id="mainHeader">
         <div class="container nav">
             <a href="index.html" class="nav-logo">同人创作平台</a>
             <div class="nav-menu">
@@ -199,6 +210,41 @@
                 expandTopBtn.addEventListener('click', toggleCollapse);
             }
         });
+    </script>
+    <script>
+        (function() {
+            let lastScrollY = 0;
+            const header = document.getElementById('mainHeader');
+            if (!header) return;
+            const scrollThreshold = 100;
+            let ticking = false;
+            
+            function handleScroll() {
+                const currentScrollY = window.scrollY;
+                if (currentScrollY > lastScrollY && currentScrollY > scrollThreshold) {
+                    if (!header.classList.contains('hidden')) {
+                        header.classList.remove('visible');
+                        header.classList.add('hidden');
+                    }
+                } else if (currentScrollY < lastScrollY) {
+                    if (header.classList.contains('hidden')) {
+                        header.classList.remove('hidden');
+                        header.classList.add('visible');
+                    }
+                }
+                lastScrollY = currentScrollY;
+            }
+            
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    window.requestAnimationFrame(function() {
+                        handleScroll();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+        })();
     </script>
 </body>
 </html>
