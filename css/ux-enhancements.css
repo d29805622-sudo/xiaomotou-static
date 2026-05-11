@@ -1,15 +1,5 @@
 /* 全局用户体验增强样式 */
 
-/* 添加页面加载淡入效果 */
-body {
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-}
-
-body.loaded {
-    opacity: 1;
-}
-
 /* 按钮和链接的通用动画优化 */
 a, .btn, .card-btn, .auth-btn, .sign-btn, .common-btn {
     transition: all 0.2s ease-out !important;
@@ -50,31 +40,42 @@ input:focus, textarea:focus, select:focus {
 }
 
 .tool-item:hover {
-    transform: scale(1.15);
-    background: linear-gradient(135deg, #6344e8, #a864ff);
-    color: white;
-    box-shadow: 0 4px 15px rgba(124, 92, 255, 0.5);
+    transform: scale(1.1);
 }
 
-/* 导航栏菜单优化 */
-.nav-menu a {
+/* 页面加载动画 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+/* 按钮点击涟漪效果 */
+.btn, .card-btn, .auth-btn {
     position: relative;
+    overflow: hidden;
 }
 
-.nav-menu a::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 50%;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #7c62ff, #e288ff);
-    transition: all 0.3s ease;
-    transform: translateX(-50%);
+/* 通知提示动画 */
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
 
-.nav-menu a:hover::after {
-    width: 80%;
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+.notification {
+    animation: slideIn 0.3s ease forwards;
+}
+
+.notification.hiding {
+    animation: slideOut 0.3s ease forwards;
 }
 
 /* 滚动条美化 */
@@ -84,80 +85,141 @@ input:focus, textarea:focus, select:focus {
 }
 
 ::-webkit-scrollbar-track {
-    background: rgba(20, 23, 45, 0.5);
-    border-radius: 4px;
+    background: rgba(20, 23, 45, 0.8);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #6344e8, #a864ff);
+    background: linear-gradient(135deg, #7c62ff, #a864ff);
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #4c34b8, #8a4ce8);
+    background: linear-gradient(135deg, #8c72ff, #b874ff);
 }
 
-/* 表单错误提示视觉效果 */
-input.error {
-    animation: shake 0.3s ease;
+/* 加载动画 */
+.loading-spinner {
+    border: 3px solid rgba(124, 92, 255, 0.2);
+    border-top: 3px solid #8064ff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
 }
 
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-/* 成功提示效果 */
-@keyframes success-pulse {
-    0% { box-shadow: 0 0 0 0 rgba(80, 250, 123, 0.4); }
-    100% { box-shadow: 0 0 0 15px rgba(80, 250, 123, 0); }
+/* 工具提示 */
+.tooltip {
+    position: relative;
 }
 
-.success-highlight {
-    animation: success-pulse 0.6s ease-out;
+.tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px 10px;
+    background: rgba(20, 23, 45, 0.95);
+    color: #e8ebf2;
+    font-size: 12px;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
 }
 
-/* 通知消息样式 */
-.notification {
+.tooltip:hover::after {
+    opacity: 1;
+}
+
+/* 平滑滚动 */
+html {
+    scroll-behavior: smooth;
+}
+
+/* 图片加载占位 */
+img {
+    background: rgba(124, 92, 255, 0.1);
+}
+
+/* 分页样式 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 20px 0;
+}
+
+.pagination a, .pagination span {
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: rgba(124, 92, 255, 0.1);
+    color: #c5cbe8;
+    transition: all 0.2s;
+}
+
+.pagination a:hover {
+    background: rgba(124, 92, 255, 0.3);
+}
+
+.pagination .active {
+    background: linear-gradient(135deg, #7c62ff, #a864ff);
+    color: white;
+}
+
+/* 标签样式 */
+.tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    background: rgba(124, 92, 255, 0.2);
+    color: #c0b4ff;
+    margin-right: 5px;
+}
+
+/* 徽章样式 */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+    color: white;
+}
+
+/* 模态框背景 */
+.modal-overlay {
     position: fixed;
-    top: 100px;
-    right: 20px;
-    padding: 15px 25px;
-    border-radius: 12px;
-    z-index: 9999;
-    animation: slideIn 0.3s ease-out;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
 }
 
-.notification.success {
-    background: rgba(80, 250, 123, 0.9);
-    color: #1f2937;
-}
-
-.notification.error {
-    background: rgba(255, 107, 107, 0.9);
-    color: #fff;
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(100px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* 响应式优化补充 */
-@media (max-width: 768px) {
-    .card:hover {
-        transform: translateY(-2px) scale(1.01) !important;
-    }
-    
-    .notification {
-        right: 10px;
-        left: 10px;
-    }
+.modal-content {
+    background: rgba(24, 27, 52, 0.95);
+    border-radius: 16px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    border: 1px solid rgba(130, 100, 255, 0.3);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
