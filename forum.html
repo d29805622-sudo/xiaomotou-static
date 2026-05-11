@@ -34,7 +34,6 @@
             color: inherit;
         }
 
-        /* 顶部状态栏 */
         .top-bar {
             background: rgba(25, 28, 48, 0.85);
             backdrop-filter: blur(12px);
@@ -60,7 +59,6 @@
             background: linear-gradient(135deg,#6344e8,#a864ff);
             font-size: 13px;
         }
-        /* 可折叠顶部栏样式 */
         .top-controls {
             display: flex;
             align-items: center;
@@ -115,7 +113,6 @@
             color: white;
         }
 
-        /* 导航栏 */
         .header {
             background: rgba(18, 21, 39, 0.75);
             backdrop-filter: blur(16px);
@@ -174,7 +171,6 @@
             border-radius: 24px;
         }
 
-        /* 警示条 */
         .warn-bar {
             margin: 15px auto;
             width: 94%;
@@ -188,7 +184,6 @@
             font-size:14px;
         }
 
-        /* 标题通用 */
         h2 {
             font-size: 21px;
             margin: 30px 0 18px;
@@ -197,7 +192,6 @@
             color: #e6eaff;
         }
 
-        /* 论坛区块 */
         .forum-section {
             background: rgba(24,27,52,0.72);
             backdrop-filter: blur(10px);
@@ -217,6 +211,10 @@
         .forum-post {
             padding: 15px;
             border-bottom: 1px solid rgba(124,92,255,0.15);
+            transition: all 0.3s;
+        }
+        .forum-post:hover {
+            background: rgba(124,92,255,0.05);
         }
         .forum-post:last-child {
             border-bottom: none;
@@ -234,9 +232,15 @@
         .post-meta {
             font-size: 13px;
             color: #8991bc;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
         }
         .post-meta span {
-            margin-right: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
         .new-post-btn {
             display: inline-block;
@@ -246,12 +250,215 @@
             transition: 0.3s;
             background: linear-gradient(135deg,#583ed8,#8c64f8);
             color: #fff;
+            cursor: pointer;
+            border: none;
         }
         .new-post-btn:hover {
             box-shadow: 0 4px 14px rgba(88,62,216,0.4);
         }
 
-        /* 悬浮工具栏 */
+        .post-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .post-modal.active {
+            display: flex;
+        }
+        .post-modal-content {
+            background: rgba(24,27,52,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            border: 1px solid rgba(130,100,255,0.25);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+        }
+        .post-modal-content h3 {
+            color: #e6eaff;
+            margin-bottom: 20px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .close-modal {
+            background: transparent;
+            border: none;
+            color: #8991bc;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+        .close-modal:hover {
+            color: #f87171;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #c5cbe8;
+            font-size: 14px;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid rgba(124,92,255,0.3);
+            border-radius: 10px;
+            background: rgba(20,23,45,0.7);
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: 0.3s;
+            font-family: inherit;
+        }
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #8064ff;
+            box-shadow: 0 0 15px rgba(124,92,255,0.25);
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg,#583ed8,#8c64f8);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .submit-btn:hover {
+            box-shadow: 0 4px 14px rgba(88,62,216,0.4);
+            transform: translateY(-2px);
+        }
+
+        .like-btn {
+            background: transparent;
+            border: none;
+            color: #8991bc;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+        }
+        .like-btn:hover {
+            background: rgba(248,113,113,0.15);
+            color: #f87171;
+        }
+        .like-btn.liked {
+            color: #f87171;
+            background: rgba(248,113,113,0.15);
+        }
+        .like-btn.liked .heart-icon {
+            fill: #f87171;
+        }
+
+        .comment-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(124,92,255,0.1);
+        }
+        .comment-toggle {
+            background: transparent;
+            border: none;
+            color: #8064ff;
+            cursor: pointer;
+            font-size: 13px;
+            padding: 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .comment-toggle:hover {
+            color: #a898ff;
+        }
+        .comments-list {
+            display: none;
+            margin-top: 15px;
+        }
+        .comments-list.active {
+            display: block;
+        }
+        .comment-item {
+            padding: 12px;
+            background: rgba(124,92,255,0.05);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .comment-author {
+            color: #c0b4ff;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .comment-time {
+            color: #7880aa;
+            font-size: 12px;
+        }
+        .comment-content {
+            color: #c5cbe8;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .comment-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .comment-form input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid rgba(124,92,255,0.3);
+            border-radius: 8px;
+            background: rgba(20,23,45,0.7);
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+        .comment-form input:focus {
+            border-color: #8064ff;
+        }
+        .comment-form button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg,#583ed8,#8c64f8);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .comment-form button:hover {
+            box-shadow: 0 4px 12px rgba(88,62,216,0.4);
+        }
+
         .float-tool {
             position: fixed;
             right: 15px;
@@ -276,7 +483,6 @@
             cursor:pointer;
         }
 
-        /* 看板娘 */
         .kanban {
             position: fixed;
             right: 15px;
@@ -291,7 +497,6 @@
             border: 1px solid rgba(130,100,255,0.25);
         }
 
-        /* 页脚 */
         .footer {
             background: rgba(15,18,35,0.9);
             border-top: 1px solid rgba(124,92,255,0.2);
@@ -328,7 +533,6 @@
             line-height:1.8;
         }
 
-        /* 响应式适配 */
         @media (max-width:768px){
             .nav{
                 flex-direction:column;
@@ -343,6 +547,9 @@
             }
             h2{
                 font-size:19px;
+            }
+            .post-modal-content {
+                padding: 20px;
             }
         }
         @media (max-width:480px){
@@ -367,6 +574,9 @@
             .footer-wrap{
                 flex-direction:column;
                 text-align:center;
+            }
+            .comment-form {
+                flex-direction: column;
             }
         }
         .header.hidden {
@@ -429,55 +639,37 @@
     <div class="container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap:10px;">
             <h2>💬 社区论坛</h2>
-            <a href="#" class="new-post-btn">✏️ 发布新帖</a>
+            <button class="new-post-btn" onclick="openPostModal()">✏️ 发布新帖</button>
         </div>
 
         <div class="forum-section">
             <h3>🔥 热门话题</h3>
-            <div class="forum-post">
-                <h4><a href="#">【攻略】第三章全结局达成条件整理</a></h4>
-                <div class="post-meta">
-                    <span>作者：攻略达人</span>
-                    <span>回复：326</span>
-                    <span>浏览：5621</span>
-                </div>
-            </div>
-            <div class="forum-post">
-                <h4><a href="#">【求助】安卓版卡在启动画面怎么办</a></h4>
-                <div class="post-meta">
-                    <span>作者：新手玩家</span>
-                    <span>回复：89</span>
-                    <span>浏览：1256</span>
-                </div>
-            </div>
-            <div class="forum-post">
-                <h4><a href="#">【讨论】大家最喜欢的女主角是谁</a></h4>
-                <div class="post-meta">
-                    <span>作者：剧情党</span>
-                    <span>回复：1024</span>
-                    <span>浏览：8956</span>
-                </div>
-            </div>
+            <div id="hotPostsList"></div>
         </div>
 
         <div class="forum-section">
             <h3>💡 创作交流</h3>
-            <div class="forum-post">
-                <h4><a href="#">【分享】自己做的第一个MOD，分享一下</a></h4>
-                <div class="post-meta">
-                    <span>作者：MOD新手</span>
-                    <span>回复：56</span>
-                    <span>浏览：892</span>
+            <div id="postsList"></div>
+        </div>
+    </div>
+
+    <div class="post-modal" id="postModal">
+        <div class="post-modal-content">
+            <h3>
+                <span>✏️ 发布新帖</span>
+                <button class="close-modal" onclick="closePostModal()">×</button>
+            </h3>
+            <form id="postForm">
+                <div class="form-group">
+                    <label>帖子标题</label>
+                    <input type="text" id="postTitle" placeholder="请输入帖子标题" required>
                 </div>
-            </div>
-            <div class="forum-post">
-                <h4><a href="#">【教程】如何使用剧本编辑器</a></h4>
-                <div class="post-meta">
-                    <span>作者：教程君</span>
-                    <span>回复：234</span>
-                    <span>浏览：3652</span>
+                <div class="form-group">
+                    <label>帖子内容</label>
+                    <textarea id="postContent" placeholder="请输入帖子内容..." required></textarea>
                 </div>
-            </div>
+                <button type="submit" class="submit-btn">发布帖子</button>
+            </form>
         </div>
     </div>
 
@@ -522,7 +714,78 @@
     <script src="js/common.js"></script>
     <script src="js/script.js"></script>
     <script>
-        // 顶部栏折叠功能
+        const defaultPosts = [
+            {
+                id: 'p1',
+                title: '【攻略】第三章全结局达成条件整理',
+                content: '详细整理了第三章所有结局的触发条件，包括隐藏结局的解锁方式...',
+                author: '攻略达人',
+                category: 'hot',
+                likes: 156,
+                likedBy: [],
+                comments: [
+                    { author: '玩家A', content: '太详细了！终于找到攻略', time: '2026-05-10 14:30' },
+                    { author: '剧情党', content: '感谢分享', time: '2026-05-10 15:20' }
+                ],
+                views: 5621,
+                time: '2026-05-08 10:00'
+            },
+            {
+                id: 'p2',
+                title: '【求助】安卓版卡在启动画面怎么办',
+                content: '我的安卓手机打开游戏后一直卡在启动画面，进不去游戏...',
+                author: '新手玩家',
+                category: 'hot',
+                likes: 45,
+                likedBy: [],
+                comments: [
+                    { author: '技术支持', content: '尝试清除应用缓存', time: '2026-05-09 09:00' }
+                ],
+                views: 1256,
+                time: '2026-05-09 08:30'
+            },
+            {
+                id: 'p3',
+                title: '【讨论】大家最喜欢的女主角是谁',
+                content: '你们最喜欢哪个女主角？一起来讨论吧！',
+                author: '剧情党',
+                category: 'hot',
+                likes: 328,
+                likedBy: [],
+                comments: [
+                    { author: '玩家B', content: '当然是女主A！', time: '2026-05-10 12:00' }
+                ],
+                views: 8956,
+                time: '2026-05-07 20:00'
+            },
+            {
+                id: 'p4',
+                title: '【分享】自己做的第一个MOD，分享一下',
+                content: '刚学做MOD不久，做了一个角色换装MOD，大家多提意见！',
+                author: 'MOD新手',
+                category: 'normal',
+                likes: 89,
+                likedBy: [],
+                comments: [
+                    { author: '大佬', content: '做得不错！', time: '2026-05-10 16:00' }
+                ],
+                views: 892,
+                time: '2026-05-10 14:00'
+            },
+            {
+                id: 'p5',
+                title: '【教程】如何使用剧本编辑器',
+                content: '详细讲解剧本编辑器的使用方法，从入门到精通...',
+                author: '教程君',
+                category: 'normal',
+                likes: 234,
+                likedBy: [],
+                comments: [],
+                views: 3652,
+                time: '2026-05-06 10:00'
+            }
+        ];
+
         document.addEventListener('DOMContentLoaded', function() {
             const topBar = document.getElementById('topBar');
             const collapseBtn = document.getElementById('collapseBtn');
@@ -551,7 +814,6 @@
                 localStorage.setItem('topBarCollapsed', newCollapsed);
             }
             
-            // 检查本地存储的状态
             const isCollapsed = localStorage.getItem('topBarCollapsed') === 'true';
             updateCollapseState(isCollapsed);
             
@@ -561,9 +823,220 @@
             if (expandTopBtn) {
                 expandTopBtn.addEventListener('click', toggleCollapse);
             }
+
+            initPosts();
+            setupPostForm();
         });
-    </script>
-    <script>
+
+        function initPosts() {
+            let posts = JSON.parse(localStorage.getItem('posts'));
+            if (!posts || posts.length === 0) {
+                posts = defaultPosts;
+                localStorage.setItem('posts', JSON.stringify(posts));
+            }
+            
+            const hotPosts = posts.filter(p => p.category === 'hot');
+            const normalPosts = posts.filter(p => p.category === 'normal');
+            
+            document.getElementById('hotPostsList').innerHTML = hotPosts.length > 0 
+                ? hotPosts.map(p => renderPost(p)).join('')
+                : '<div class="forum-post" style="text-align:center;color:#8991bc;">暂无热门帖子</div>';
+            
+            document.getElementById('postsList').innerHTML = normalPosts.length > 0
+                ? normalPosts.map(p => renderPost(p)).join('')
+                : '<div class="forum-post" style="text-align:center;color:#8991bc;">暂无创作交流帖子</div>';
+        }
+
+        function renderPost(post) {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const isLiked = currentUser && post.likedBy && post.likedBy.includes(currentUser.username);
+            
+            return `
+                <div class="forum-post" id="post-${post.id}">
+                    <h4><a href="javascript:void(0);">${post.title}</a></h4>
+                    <p style="color:#9fa6d2;font-size:14px;margin:8px 0;">${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}</p>
+                    <div class="post-meta">
+                        <span>👤 ${post.author}</span>
+                        <span>📅 ${post.time}</span>
+                        <span>👁️ ${post.views}</span>
+                        <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')">
+                            <svg class="heart-icon" width="14" height="14" viewBox="0 0 24 24" fill="${isLiked ? '#f87171' : 'none'}" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                            <span id="likes-count-${post.id}">${post.likes}</span>
+                        </button>
+                        <button class="comment-toggle" onclick="toggleComments('${post.id}')">
+                            💬 <span id="comments-count-${post.id}">${post.comments ? post.comments.length : 0}</span> 评论
+                        </button>
+                    </div>
+                    <div class="comment-section">
+                        <div class="comments-list" id="comments-${post.id}">
+                            ${renderComments(post)}
+                            <div class="comment-form">
+                                <input type="text" id="comment-input-${post.id}" placeholder="写下你的评论...">
+                                <button onclick="submitComment('${post.id}')">发送</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderComments(post) {
+            if (!post.comments || post.comments.length === 0) {
+                return '<div style="color:#7880aa;font-size:13px;text-align:center;padding:10px;">暂无评论，快来抢沙发吧！</div>';
+            }
+            return post.comments.map(c => `
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <span class="comment-author">${c.author}</span>
+                        <span class="comment-time">${c.time}</span>
+                    </div>
+                    <div class="comment-content">${c.content}</div>
+                </div>
+            `).join('');
+        }
+
+        function toggleLike(postId) {
+            if (!checkLogin(true)) return;
+            
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            let posts = JSON.parse(localStorage.getItem('posts'));
+            const postIndex = posts.findIndex(p => p.id === postId);
+            
+            if (postIndex >= 0) {
+                if (!posts[postIndex].likedBy) {
+                    posts[postIndex].likedBy = [];
+                }
+                
+                const likeIndex = posts[postIndex].likedBy.indexOf(currentUser.username);
+                
+                if (likeIndex >= 0) {
+                    posts[postIndex].likedBy.splice(likeIndex, 1);
+                    posts[postIndex].likes--;
+                    showNotification('取消点赞', 'success');
+                } else {
+                    posts[postIndex].likedBy.push(currentUser.username);
+                    posts[postIndex].likes++;
+                    showNotification('点赞成功！', 'success');
+                }
+                
+                posts[postIndex].views++;
+                localStorage.setItem('posts', JSON.stringify(posts));
+                
+                const likeBtn = document.querySelector(`#post-${postId} .like-btn`);
+                const likesCount = document.getElementById(`likes-count-${postId}`);
+                
+                if (likeBtn && likesCount) {
+                    likeBtn.classList.toggle('liked');
+                    likeBtn.querySelector('.heart-icon').setAttribute('fill', likeIndex >= 0 ? 'none' : '#f87171');
+                    likesCount.textContent = posts[postIndex].likes;
+                }
+            }
+        }
+
+        function toggleComments(postId) {
+            const commentsList = document.getElementById(`comments-${postId}`);
+            if (commentsList) {
+                commentsList.classList.toggle('active');
+            }
+        }
+
+        function submitComment(postId) {
+            if (!checkLogin(true)) return;
+            
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const input = document.getElementById(`comment-input-${postId}`);
+            const content = input.value.trim();
+            
+            if (!content) {
+                showNotification('请输入评论内容', 'error');
+                return;
+            }
+            
+            let posts = JSON.parse(localStorage.getItem('posts'));
+            const postIndex = posts.findIndex(p => p.id === postId);
+            
+            if (postIndex >= 0) {
+                if (!posts[postIndex].comments) {
+                    posts[postIndex].comments = [];
+                }
+                
+                posts[postIndex].comments.push({
+                    author: currentUser.username,
+                    content: content,
+                    time: new Date().toLocaleString()
+                });
+                
+                localStorage.setItem('posts', JSON.stringify(posts));
+                
+                const commentsList = document.getElementById(`comments-${postId}`);
+                const post = posts[postIndex];
+                commentsList.innerHTML = renderComments(post) + `
+                    <div class="comment-form">
+                        <input type="text" id="comment-input-${postId}" placeholder="写下你的评论...">
+                        <button onclick="submitComment('${postId}')">发送</button>
+                    </div>
+                `;
+                
+                document.getElementById(`comments-count-${postId}`).textContent = post.comments.length;
+                input.value = '';
+                showNotification('评论发布成功！', 'success');
+            }
+        }
+
+        function openPostModal() {
+            if (!checkLogin(true)) return;
+            document.getElementById('postModal').classList.add('active');
+        }
+
+        function closePostModal() {
+            document.getElementById('postModal').classList.remove('active');
+            document.getElementById('postForm').reset();
+        }
+
+        function setupPostForm() {
+            const form = document.getElementById('postForm');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (!currentUser) {
+                    showNotification('请先登录', 'error');
+                    return;
+                }
+                
+                const title = document.getElementById('postTitle').value.trim();
+                const content = document.getElementById('postContent').value.trim();
+                
+                if (!title || !content) {
+                    showNotification('请填写完整的帖子信息', 'error');
+                    return;
+                }
+                
+                let posts = JSON.parse(localStorage.getItem('posts'));
+                const newPost = {
+                    id: 'p' + Date.now(),
+                    title: title,
+                    content: content,
+                    author: currentUser.username,
+                    category: 'normal',
+                    likes: 0,
+                    likedBy: [],
+                    comments: [],
+                    views: 1,
+                    time: new Date().toLocaleString()
+                };
+                
+                posts.unshift(newPost);
+                localStorage.setItem('posts', JSON.stringify(posts));
+                
+                closePostModal();
+                initPosts();
+                showNotification('帖子发布成功！', 'success');
+            });
+        }
+
         (function() {
             let lastScrollY = 0;
             const header = document.getElementById('mainHeader');

@@ -34,7 +34,6 @@
             color: inherit;
         }
 
-        /* 顶部状态栏 */
         .top-bar {
             background: rgba(25, 28, 48, 0.85);
             backdrop-filter: blur(12px);
@@ -60,7 +59,6 @@
             background: linear-gradient(135deg,#6344e8,#a864ff);
             font-size: 13px;
         }
-        /* 可折叠顶部栏样式 */
         .top-controls {
             display: flex;
             align-items: center;
@@ -115,7 +113,6 @@
             color: white;
         }
 
-        /* 导航栏 */
         .header {
             background: rgba(18, 21, 39, 0.75);
             backdrop-filter: blur(16px);
@@ -174,7 +171,6 @@
             border-radius: 24px;
         }
 
-        /* 警示条 */
         .warn-bar {
             margin: 15px auto;
             width: 94%;
@@ -188,7 +184,6 @@
             font-size:14px;
         }
 
-        /* 标题 */
         h2 {
             font-size: 21px;
             margin: 30px 0 18px;
@@ -197,7 +192,6 @@
             color: #e6eaff;
         }
 
-        /* 卡片网格 */
         .card-list {
             display: grid;
             grid-template-columns: repeat(auto-fill,minmax(280px,1fr));
@@ -236,20 +230,45 @@
             margin-bottom: 14px;
             flex-wrap:wrap;
         }
+        .card-btns {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
         .card-btn {
+            flex: 1;
             display: inline-block;
-            padding: 10px 25px;
+            padding: 10px 15px;
             border-radius: 20px;
             font-size: 14px;
             transition: 0.3s;
             background: linear-gradient(135deg,#583ed8,#8c64f8);
             color: #fff;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            min-width: 80px;
         }
         .card-btn:hover {
             box-shadow: 0 4px 14px rgba(88,62,216,0.4);
         }
+        .collect-btn {
+            background: rgba(255, 107, 157, 0.15);
+            border: 1px solid rgba(255, 107, 157, 0.4);
+            color: #f87171;
+            flex: 0 0 auto;
+            padding: 10px 14px;
+            min-width: auto;
+        }
+        .collect-btn:hover {
+            background: rgba(255, 107, 157, 0.25);
+            box-shadow: 0 4px 14px rgba(255, 107, 157, 0.3);
+        }
+        .collect-btn.favorited {
+            background: rgba(255, 107, 157, 0.3);
+            color: #fff;
+        }
 
-        /* 搜索区域 */
         .search-wrap {
             background: rgba(30,33,60,0.65);
             backdrop-filter: blur(12px);
@@ -292,7 +311,6 @@
             cursor: pointer;
         }
 
-        /* 悬浮工具栏 */
         .float-tool {
             position: fixed;
             right: 15px;
@@ -317,7 +335,6 @@
             cursor:pointer;
         }
 
-        /* 看板娘 */
         .kanban {
             position: fixed;
             right: 15px;
@@ -332,7 +349,6 @@
             border: 1px solid rgba(130,100,255,0.25);
         }
 
-        /* 页脚 */
         .footer {
             background: rgba(15,18,35,0.9);
             border-top: 1px solid rgba(124,92,255,0.2);
@@ -430,68 +446,12 @@
         
         <div class="search-wrap">
             <div class="search-box">
-                <input type="text" class="search-input" placeholder="搜索游戏安装包...">
-                <button class="search-btn">搜索</button>
+                <input type="text" class="search-input" placeholder="搜索游戏安装包..." id="searchInput">
+                <button class="search-btn" onclick="searchGames()">搜索</button>
             </div>
         </div>
 
-        <div class="card-list">
-            <div class="card">
-                <h3>小魔头完整版 - PC版</h3>
-                <p>完整中文汉化版，免安装解压即玩</p>
-                <div class="card-data">
-                    <span>📦 大小：3.8GB</span>
-                    <span>⭐ 评分：4.8分</span>
-                </div>
-                <div class="card-data">
-                    <span>🔧 版本：v2.5.1</span>
-                    <span>📅 更新：2026-04-28</span>
-                </div>
-                <a href="#" class="card-btn">立即下载</a>
-            </div>
-            
-            <div class="card">
-                <h3>小魔头完整版 - 安卓版</h3>
-                <p>移动端适配优化版，APK直装</p>
-                <div class="card-data">
-                    <span>📦 大小：2.2GB</span>
-                    <span>⭐ 评分：4.7分</span>
-                </div>
-                <div class="card-data">
-                    <span>🔧 版本：v2.4.0</span>
-                    <span>📅 更新：2026-04-20</span>
-                </div>
-                <a href="#" class="card-btn">立即下载</a>
-            </div>
-            
-            <div class="card">
-                <h3>怀旧典藏版合集</h3>
-                <p>历代版本完整收录合集包</p>
-                <div class="card-data">
-                    <span>📦 大小：15.6GB</span>
-                    <span>⭐ 评分：4.9分</span>
-                </div>
-                <div class="card-data">
-                    <span>🔧 版本：1.0-2.5全系列</span>
-                    <span>📅 更新：2026-05-01</span>
-                </div>
-                <a href="#" class="card-btn">立即下载</a>
-            </div>
-            
-            <div class="card">
-                <h3>轻量精简版</h3>
-                <p>无冗余内容，极速体验</p>
-                <div class="card-data">
-                    <span>📦 大小：1.5GB</span>
-                    <span>⭐ 评分：4.6分</span>
-                </div>
-                <div class="card-data">
-                    <span>🔧 版本：v2.5.1 Lite</span>
-                    <span>📅 更新：2026-04-30</span>
-                </div>
-                <a href="#" class="card-btn">立即下载</a>
-            </div>
-        </div>
+        <div class="card-list" id="gameList"></div>
     </div>
 
     <div class="float-tool">
@@ -535,42 +495,45 @@
     <script src="js/common.js"></script>
     <script src="js/script.js"></script>
     <script>
-        (function() {
-            let lastScrollY = 0;
-            const header = document.getElementById('mainHeader');
-            if (!header) return;
-            const scrollThreshold = 100;
-            let ticking = false;
-            
-            function handleScroll() {
-                const currentScrollY = window.scrollY;
-                if (currentScrollY > lastScrollY && currentScrollY > scrollThreshold) {
-                    if (!header.classList.contains('hidden')) {
-                        header.classList.remove('visible');
-                        header.classList.add('hidden');
-                    }
-                } else if (currentScrollY < lastScrollY) {
-                    if (header.classList.contains('hidden')) {
-                        header.classList.remove('hidden');
-                        header.classList.add('visible');
-                    }
-                }
-                lastScrollY = currentScrollY;
+        const games = [
+            {
+                id: 'game-1',
+                name: '小魔头完整版 - PC版',
+                description: '完整中文汉化版，免安装解压即玩',
+                size: '3.8GB',
+                rating: '4.8分',
+                version: 'v2.5.1',
+                update: '2026-04-28'
+            },
+            {
+                id: 'game-2',
+                name: '小魔头完整版 - 安卓版',
+                description: '移动端适配优化版，APK直装',
+                size: '2.2GB',
+                rating: '4.7分',
+                version: 'v2.4.0',
+                update: '2026-04-20'
+            },
+            {
+                id: 'game-3',
+                name: '怀旧典藏版合集',
+                description: '历代版本完整收录合集包',
+                size: '15.6GB',
+                rating: '4.9分',
+                version: '1.0-2.5全系列',
+                update: '2026-05-01'
+            },
+            {
+                id: 'game-4',
+                name: '轻量精简版',
+                description: '无冗余内容，极速体验',
+                size: '1.5GB',
+                rating: '4.6分',
+                version: 'v2.5.1 Lite',
+                update: '2026-04-30'
             }
-            
-            window.addEventListener('scroll', function() {
-                if (!ticking) {
-                    window.requestAnimationFrame(function() {
-                        handleScroll();
-                        ticking = false;
-                    });
-                    ticking = true;
-                }
-            });
-        })();
-    </script>
-    <script>
-        // 顶部栏折叠功能
+        ];
+
         document.addEventListener('DOMContentLoaded', function() {
             const topBar = document.getElementById('topBar');
             const collapseBtn = document.getElementById('collapseBtn');
@@ -599,7 +562,6 @@
                 localStorage.setItem('topBarCollapsed', newCollapsed);
             }
             
-            // 检查本地存储的状态
             const isCollapsed = localStorage.getItem('topBarCollapsed') === 'true';
             updateCollapseState(isCollapsed);
             
@@ -609,9 +571,92 @@
             if (expandTopBtn) {
                 expandTopBtn.addEventListener('click', toggleCollapse);
             }
+
+            renderGames(games);
+
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchGames();
+                }
+            });
         });
-    </script>
-    <script>
+
+        function renderGames(gameList) {
+            const gameListEl = document.getElementById('gameList');
+            
+            gameListEl.innerHTML = gameList.map(game => {
+                const isFavorited = window.isFavorited ? window.isFavorited(game.id) : false;
+                
+                return `
+                    <div class="card">
+                        <h3>${game.name}</h3>
+                        <p>${game.description}</p>
+                        <div class="card-data">
+                            <span>📦 大小：${game.size}</span>
+                            <span>⭐ 评分：${game.rating}</span>
+                        </div>
+                        <div class="card-data">
+                            <span>🔧 版本：${game.version}</span>
+                            <span>📅 更新：${game.update}</span>
+                        </div>
+                        <div class="card-btns">
+                            <button class="card-btn" onclick="handleDownload('${game.name}')">立即下载</button>
+                            <button class="card-btn collect-btn ${isFavorited ? 'favorited' : ''}" onclick="handleFavorite('${game.id}', '${game.name}')" id="fav-btn-${game.id}">
+                                ${isFavorited ? '❤️ 已收藏' : '🤍 收藏'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function handleDownload(gameName) {
+            showNotification(`正在准备下载：${gameName}`, 'success');
+            setTimeout(function() {
+                showNotification(`${gameName} 下载链接已复制到剪贴板`, 'success');
+            }, 1000);
+        }
+
+        function handleFavorite(gameId, gameName) {
+            if (!checkLogin(true)) return;
+            
+            const isNowFavorited = toggleFavorite(gameId, gameName, '游戏资源');
+            
+            const btn = document.getElementById(`fav-btn-${gameId}`);
+            if (btn) {
+                if (isNowFavorited) {
+                    btn.classList.add('favorited');
+                    btn.innerHTML = '❤️ 已收藏';
+                } else {
+                    btn.classList.remove('favorited');
+                    btn.innerHTML = '🤍 收藏';
+                }
+            }
+        }
+
+        function searchGames() {
+            const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+            
+            if (!keyword) {
+                renderGames(games);
+                return;
+            }
+            
+            const filtered = games.filter(game => 
+                game.name.toLowerCase().includes(keyword) ||
+                game.description.toLowerCase().includes(keyword)
+            );
+            
+            renderGames(filtered);
+            
+            if (filtered.length === 0) {
+                showNotification('未找到匹配的游戏资源', 'error');
+            } else {
+                showNotification(`找到 ${filtered.length} 个相关资源`, 'success');
+            }
+        }
+
         (function() {
             let lastScrollY = 0;
             const header = document.getElementById('mainHeader');
