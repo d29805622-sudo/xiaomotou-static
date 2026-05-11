@@ -3,459 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="referrer" content="never">
     <title>个人中心 - 同人创作交流平台</title>
     <link rel="stylesheet" href="css/ux-enhancements.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Microsoft Yahei", sans-serif;
-        }
-        body {
-            background: #0c0e1a;
-            color: #e8ebf2;
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-        .container {
-            width: 94%;
-            max-width: 1380px;
-            margin: 0 auto;
-        }
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft Yahei", sans-serif; }
+        body { background: #0c0e1a; color: #e8ebf2; line-height: 1.6; min-height: 100vh; }
+        .container { width: 94%; max-width: 1380px; margin: 0 auto; }
+        a { text-decoration: none; color: inherit; }
 
-        /* 顶部状态栏 */
-        .top-bar {
-            background: rgba(25, 28, 48, 0.85);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(138, 108, 255, 0.2);
-            padding: 8px 0;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-        .top-bar .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap:8px;
-        }
-        .top-info span {
-            margin-right: 20px;
-            color: #b0b8d4;
-        }
-        .top-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .theme-switch {
-            cursor: pointer;
-            padding: 4px 12px;
-            border-radius: 20px;
-            background: linear-gradient(135deg,#6344e8,#a864ff);
-            font-size: 13px;
-        }
-        .collapse-btn {
-            background: rgba(138, 108, 255, 0.3);
-            border: 1px solid rgba(138, 108, 255, 0.5);
-            color: #c0b4ff;
-            border-radius: 50%;
-            width: 26px;
-            height: 26px;
-            font-size: 18px;
-            line-height: 1;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .collapse-btn:hover {
-            background: linear-gradient(135deg, #6344e8, #a864ff);
-            color: white;
-        }
-        .top-bar.collapsed {
-            height: 0;
-            padding: 0;
-            overflow: hidden;
-            border: none;
-        }
-        .top-bar.collapsed .container {
-            display: none;
-        }
+        .top-bar { background: rgba(25, 28, 48, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(138, 108, 255, 0.2); padding: 8px 0; font-size: 14px; transition: all 0.3s ease; }
+        .top-bar .container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:8px; }
+        .top-info span { margin-right: 20px; color: #b0b8d4; }
+        .top-controls { display: flex; align-items: center; gap: 10px; }
+        .theme-switch { cursor: pointer; padding: 4px 12px; border-radius: 20px; background: linear-gradient(135deg,#6344e8,#a864ff); font-size: 13px; }
+        .collapse-btn { background: rgba(138, 108, 255, 0.3); border: 1px solid rgba(138, 108, 255, 0.5); color: #c0b4ff; border-radius: 50%; width: 26px; height: 26px; font-size: 18px; line-height: 1; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
+        .collapse-btn:hover { background: linear-gradient(135deg, #6344e8, #a864ff); color: white; }
+        .top-bar.collapsed { height: 0; padding: 0; overflow: hidden; border: none; }
+        .top-bar.collapsed .container { display: none; }
 
-        /* 导航栏 */
-        .header {
-            background: rgba(18, 21, 39, 0.95);
-            backdrop-filter: blur(16px);
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            border-bottom: 1px solid rgba(124, 92, 255, 0.18);
-            transition: all 0.3s ease;
-        }
-        .header.hidden {
-            transform: translateY(-100%);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-        }
-        .header.visible {
-            transform: translateY(0);
-            position: sticky;
-        }
-        .nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            min-height: 60px;
-            flex-wrap: wrap;
-            gap:15px;
-            padding:8px 0;
-        }
-        .nav-logo {
-            font-size: 22px;
-            font-weight: 700;
-            background: linear-gradient(90deg,#7c62ff,#e288ff);
-            -webkit-background-clip: text;
-            color: transparent;
-            letter-spacing: 2px;
-        }
-        .nav-menu {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-        .nav-menu a {
-            color: #c5cbe8;
-            padding: 8px 14px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-        .nav-menu a:hover {
-            background: rgba(124, 92, 255, 0.25);
-            color: #fff;
-        }
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .expand-top-btn {
-            background: rgba(138, 108, 255, 0.3);
-            border: 1px solid rgba(138, 108, 255, 0.5);
-            color: #c0b4ff;
-            border-radius: 20px;
-            padding: 6px 14px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: none;
-        }
-        .expand-top-btn:hover {
-            background: linear-gradient(135deg, #6344e8, #a864ff);
-            color: white;
-        }
-        .login-btn {
-            display:flex;
-            flex-wrap:wrap;
-            gap:8px;
-        }
-        .sign-btn {
-            background: linear-gradient(135deg,#4834d4,#8356f9);
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 24px;
-            font-size: 14px;
-        }
-        .common-btn {
-            border: 1px solid rgba(138,108,255,0.4);
-            color: #d0c8ff;
-            background: transparent;
-            padding: 8px 16px;
-            border-radius: 24px;
-            font-size: 14px;
-        }
+        .header { background: rgba(18, 21, 39, 0.95); backdrop-filter: blur(16px); position: sticky; top: 0; z-index: 999; border-bottom: 1px solid rgba(124, 92, 255, 0.18); transition: all 0.3s ease; }
+        .header.hidden { transform: translateY(-100%); position: fixed; top: 0; left: 0; right: 0; }
+        .header.visible { transform: translateY(0); position: sticky; }
+        .nav { display: flex; justify-content: space-between; align-items: center; min-height: 60px; flex-wrap: wrap; gap:15px; padding:8px 0; }
+        .nav-logo { font-size: 22px; font-weight: 700; background: linear-gradient(90deg,#7c62ff,#e288ff); -webkit-background-clip: text; color: transparent; letter-spacing: 2px; }
+        .nav-menu { display: flex; flex-wrap: wrap; gap: 5px; }
+        .nav-menu a { color: #c5cbe8; padding: 8px 14px; border-radius: 8px; transition: all 0.3s ease; font-size: 14px; }
+        .nav-menu a:hover { background: rgba(124, 92, 255, 0.25); color: #fff; }
+        .nav-right { display: flex; align-items: center; gap: 10px; }
+        .expand-top-btn { background: rgba(138, 108, 255, 0.3); border: 1px solid rgba(138, 108, 255, 0.5); color: #c0b4ff; border-radius: 20px; padding: 6px 14px; font-size: 13px; cursor: pointer; transition: all 0.2s ease; display: none; }
+        .expand-top-btn:hover { background: linear-gradient(135deg, #6344e8, #a864ff); color: white; }
+        .login-btn { display:flex; flex-wrap:wrap; gap:8px; }
+        .sign-btn { background: linear-gradient(135deg,#4834d4,#8356f9); color: #fff; padding: 8px 16px; border-radius: 24px; font-size: 14px; }
+        .common-btn { border: 1px solid rgba(138,108,255,0.4); color: #d0c8ff; background: transparent; padding: 8px 16px; border-radius: 24px; font-size: 14px; }
 
-        /* 警示条 */
-        .warn-bar {
-            margin: 15px auto;
-            width: 94%;
-            padding: 12px;
-            text-align: center;
-            background: rgba(220, 80, 80, 0.12);
-            border: 1px solid rgba(255,100,100,0.3);
-            border-radius: 10px;
-            color: #ff8c8c;
-            letter-spacing: 1px;
-            font-size:14px;
-        }
+        .warn-bar { margin: 15px auto; width: 94%; padding: 12px; text-align: center; background: rgba(220, 80, 80, 0.12); border: 1px solid rgba(255,100,100,0.3); border-radius: 10px; color: #ff8c8c; letter-spacing: 1px; font-size:14px; }
 
-        /* 个人中心布局 */
-        .profile-container {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 30px;
-            margin: 30px 0;
-        }
+        .profile-container { display: grid; grid-template-columns: 300px 1fr; gap: 30px; margin: 30px 0; }
+        .sidebar { background: rgba(24,27,52,0.72); backdrop-filter: blur(10px); border-radius: 16px; padding: 25px; border: 1px solid rgba(130,100,255,0.18); }
+        .avatar-section { text-align: center; margin-bottom: 30px; padding-bottom: 25px; border-bottom: 1px solid rgba(124,92,255,0.2); }
+        .avatar { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #7c62ff, #a864ff); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 40px; color: white; }
+        .username { font-size: 20px; font-weight: bold; color: #e6eaff; }
+        .user-email { color: #8991bc; font-size: 14px; margin-top: 5px; }
+        .side-menu { list-style: none; }
+        .side-menu li { margin-bottom: 8px; }
+        .side-menu a { display: block; padding: 12px 15px; border-radius: 10px; color: #c5cbe8; transition: all 0.3s ease; font-size: 14px; cursor: pointer; }
+        .side-menu a:hover, .side-menu a.active { background: rgba(124,92,255,0.25); color: #fff; }
 
-        /* 侧边栏 */
-        .sidebar {
-            background: rgba(24,27,52,0.72);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 25px;
-            border: 1px solid rgba(130,100,255,0.18);
-        }
-        .avatar-section {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 25px;
-            border-bottom: 1px solid rgba(124,92,255,0.2);
-        }
-        .avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #7c62ff, #a864ff);
-            margin: 0 auto 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            color: white;
-        }
-        .username {
-            font-size: 20px;
-            font-weight: bold;
-            color: #e6eaff;
-        }
-        .user-email {
-            color: #8991bc;
-            font-size: 14px;
-            margin-top: 5px;
-        }
+        .main-content { background: rgba(24,27,52,0.72); backdrop-filter: blur(10px); border-radius: 16px; padding: 25px; border: 1px solid rgba(130,100,255,0.18); }
+        .content-title { font-size: 20px; margin-bottom: 25px; color: #e6eaff; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: rgba(124,92,255,0.1); border-radius: 12px; padding: 20px; text-align: center; }
+        .stat-value { font-size: 28px; font-weight: bold; color: #a898ff; }
+        .stat-label { color: #8991bc; font-size: 13px; margin-top: 5px; }
+        .info-form { max-width: 600px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #c5cbe8; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid rgba(124,92,255,0.3); border-radius: 10px; background: rgba(20,23,45,0.7); color: #fff; font-size: 14px; outline: none; transition: 0.3s; }
+        .form-group input:focus, .form-group textarea:focus { border-color: #8064ff; }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .submit-btn { padding: 12px 30px; background: linear-gradient(135deg, #583ed8, #8c64f8); color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 15px; }
+        .favorites-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .favorite-item { background: rgba(124,92,255,0.1); border-radius: 10px; padding: 15px; }
+        .favorite-item h4 { color: #e6eaff; margin-bottom: 8px; }
+        .favorite-item p { color: #8991bc; font-size: 13px; }
+        .remove-favorite { margin-top: 10px; padding: 5px 12px; background: rgba(255,100,100,0.2); border: none; border-radius: 15px; color: #ff8c8c; font-size: 12px; cursor: pointer; }
+        .not-login { text-align: center; padding: 60px; }
+        .not-login p { margin-bottom: 20px; color: #ff8c8c; }
+        .not-login a { display: inline-block; padding: 10px 24px; background: linear-gradient(135deg, #583ed8, #8c64f8); color: white; border-radius: 25px; }
 
-        /* 菜单 */
-        .side-menu {
-            list-style: none;
-        }
-        .side-menu li {
-            margin-bottom: 8px;
-        }
-        .side-menu a {
-            display: block;
-            padding: 12px 15px;
-            border-radius: 10px;
-            color: #c5cbe8;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-        .side-menu a:hover, .side-menu a.active {
-            background: rgba(124,92,255,0.25);
-            color: #fff;
-        }
+        .footer { background: rgba(15,18,35,0.9); border-top: 1px solid rgba(124,92,255,0.2); margin-top: 50px; padding: 35px 0 20px; }
+        .copyright { text-align: center; padding-top: 20px; margin-top: 25px; border-top: 1px solid rgba(124,92,255,0.15); color: #7880aa; font-size: 13px; line-height:1.8; }
+        .float-tool { position: fixed; right: 15px; bottom: 120px; display: flex; flex-direction: column; gap: 10px; z-index: 998; }
+        .tool-item { width: 42px; height: 42px; border-radius: 50%; background: rgba(35,38,70,0.8); backdrop-filter: blur(8px); border: 1px solid rgba(124,92,255,0.3); color: #c8bfff; text-align: center; line-height: 42px; box-shadow: 0 4px 16px rgba(0,0,0,0.25); font-size:14px; cursor:pointer; }
+        .kanban { position: fixed; right: 15px; bottom: 30px; z-index: 997; cursor:pointer; }
+        .kanban img { width:75px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.35); border: 1px solid rgba(130,100,255,0.25); }
 
-        /* 主内容区 */
-        .main-content {
-            background: rgba(24,27,52,0.72);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 25px;
-            border: 1px solid rgba(130,100,255,0.18);
-        }
-        .content-title {
-            font-size: 20px;
-            margin-bottom: 25px;
-            color: #e6eaff;
-        }
-
-        /* 统计卡片 */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        .stat-card {
-            background: rgba(124,92,255,0.1);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-        }
-        .stat-value {
-            font-size: 28px;
-            font-weight: bold;
-            color: #a898ff;
-        }
-        .stat-label {
-            color: #8991bc;
-            font-size: 13px;
-            margin-top: 5px;
-        }
-
-        /* 用户信息表单 */
-        .info-form {
-            max-width: 600px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #c5cbe8;
-        }
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid rgba(124,92,255,0.3);
-            border-radius: 10px;
-            background: rgba(20,23,45,0.7);
-            color: #fff;
-            font-size: 14px;
-            outline: none;
-            transition: 0.3s;
-        }
-        .form-group input:focus, .form-group textarea:focus {
-            border-color: #8064ff;
-        }
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-        .submit-btn {
-            padding: 12px 30px;
-            background: linear-gradient(135deg, #583ed8, #8c64f8);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 15px;
-        }
-
-        /* 收藏列表 */
-        .favorites-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-        }
-        .favorite-item {
-            background: rgba(124,92,255,0.1);
-            border-radius: 10px;
-            padding: 15px;
-        }
-        .favorite-item h4 {
-            color: #e6eaff;
-            margin-bottom: 8px;
-        }
-        .favorite-item p {
-            color: #8991bc;
-            font-size: 13px;
-        }
-        .remove-favorite {
-            margin-top: 10px;
-            padding: 5px 12px;
-            background: rgba(255,100,100,0.2);
-            border: none;
-            border-radius: 15px;
-            color: #ff8c8c;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        /* 未登录提示 */
-        .not-login {
-            text-align: center;
-            padding: 60px;
-        }
-        .not-login p {
-            margin-bottom: 20px;
-            color: #ff8c8c;
-        }
-        .not-login a {
-            display: inline-block;
-            padding: 10px 24px;
-            background: linear-gradient(135deg, #583ed8, #8c64f8);
-            color: white;
-            border-radius: 25px;
-        }
-
-        /* 页脚 */
-        .footer {
-            background: rgba(15,18,35,0.9);
-            border-top: 1px solid rgba(124,92,255,0.2);
-            margin-top: 50px;
-            padding: 35px 0 20px;
-        }
-        .copyright {
-            text-align: center;
-            padding-top: 20px;
-            margin-top: 25px;
-            border-top: 1px solid rgba(124,92,255,0.15);
-            color: #7880aa;
-            font-size: 13px;
-            line-height:1.8;
-        }
-
-        /* 悬浮工具栏 */
-        .float-tool {
-            position: fixed;
-            right: 15px;
-            bottom: 120px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 998;
-        }
-        .tool-item {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: rgba(35,38,70,0.8);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(124,92,255,0.3);
-            color: #c8bfff;
-            text-align: center;
-            line-height: 42px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-            font-size:14px;
-            cursor:pointer;
-        }
-
-        /* 看板娘 */
-        .kanban {
-            position: fixed;
-            right: 15px;
-            bottom: 30px;
-            z-index: 997;
-            cursor:pointer;
-        }
-        .kanban img {
-            width:75px;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
-            border: 1px solid rgba(130,100,255,0.25);
-        }
-
-        @media (max-width:768px){
-            .profile-container{
-                grid-template-columns:1fr;
-            }
-            .stats-grid{
-                grid-template-columns: repeat(2,1fr);
-            }
-        }
+        @media (max-width:768px){ .profile-container{ grid-template-columns:1fr; } .stats-grid{ grid-template-columns: repeat(2,1fr); } }
     </style>
 </head>
 <body>
@@ -467,7 +90,7 @@
             </div>
             <div class="top-controls">
                 <div class="theme-switch">切换显示模式</div>
-                <button class="collapse-btn" id="collapseBtn" title="收起顶部栏">−</button>
+                <button class="collapse-btn" id="collapseBtn">−</button>
             </div>
         </div>
     </div>
@@ -485,8 +108,8 @@
                 <a href="card.html">角色卡牌</a>
             </div>
             <div class="nav-right">
-                <button class="expand-top-btn" id="expandTopBtn" title="显示/隐藏顶部栏">顶部栏</button>
-                <div class="login-btn" id="navButtons">
+                <button class="expand-top-btn" id="expandTopBtn">顶部栏</button>
+                <div class="login-btn">
                     <a href="sign.html" class="sign-btn">每日签到</a>
                     <a href="user.html" class="common-btn">个人中心</a>
                     <a href="login.html" class="common-btn">登录</a>
@@ -496,9 +119,7 @@
         </div>
     </header>
 
-    <div class="warn-bar">
-        同人创作交流专区 禁止违规传播 严格内容自查
-    </div>
+    <div class="warn-bar">同人创作交流专区 禁止违规传播 严格内容自查</div>
 
     <div class="container">
         <div class="profile-container" id="profileContainer">
@@ -510,9 +131,9 @@
     </div>
 
     <div class="float-tool">
-        <div class="tool-item" id="scrollTopBtn" title="返回顶部" style="display: none;">⬆️</div>
-        <a href="help.html" class="tool-item" title="帮助中心">❓</a>
-        <a href="report.html" class="tool-item" title="违规举报">🚨</a>
+        <div class="tool-item" id="scrollTopBtn" style="display: none;">⬆️</div>
+        <a href="help.html" class="tool-item">❓</a>
+        <a href="report.html" class="tool-item">🚨</a>
     </div>
 
     <div class="kanban">
@@ -526,27 +147,16 @@
         </div>
     </footer>
 
-    <!-- Firebase SDK -->
-    <script type="module" src="js/firebase.js"></script>
-    
-    <!-- 页面脚本 -->
     <script>
-        // 顶部栏折叠功能
         document.addEventListener('DOMContentLoaded', function() {
             const topBar = document.getElementById('topBar');
             const collapseBtn = document.getElementById('collapseBtn');
             const expandTopBtn = document.getElementById('expandTopBtn');
             
             function updateCollapseState(collapsed) {
-                if (topBar) {
-                    topBar.classList.toggle('collapsed', collapsed);
-                }
-                if (collapseBtn) {
-                    collapseBtn.textContent = collapsed ? '+' : '−';
-                }
-                if (expandTopBtn) {
-                    expandTopBtn.style.display = collapsed ? 'inline-block' : 'none';
-                }
+                if (topBar) topBar.classList.toggle('collapsed', collapsed);
+                if (collapseBtn) collapseBtn.textContent = collapsed ? '+' : '−';
+                if (expandTopBtn) expandTopBtn.style.display = collapsed ? 'inline-block' : 'none';
             }
             
             function toggleCollapse() {
@@ -556,24 +166,19 @@
                 localStorage.setItem('topBarCollapsed', newCollapsed);
             }
             
-            const isCollapsed = localStorage.getItem('topBarCollapsed') === 'true';
-            updateCollapseState(isCollapsed);
-            
+            updateCollapseState(localStorage.getItem('topBarCollapsed') === 'true');
             collapseBtn?.addEventListener('click', toggleCollapse);
             expandTopBtn?.addEventListener('click', toggleCollapse);
         });
 
-        // 导航栏滚动自动隐藏
         (function() {
             let lastScrollY = 0;
             const header = document.getElementById('mainHeader');
             if (!header) return;
-            const scrollThreshold = 100;
-            let ticking = false;
             
-            function handleScroll() {
+            window.addEventListener('scroll', function() {
                 const currentScrollY = window.scrollY;
-                if (currentScrollY > lastScrollY && currentScrollY > scrollThreshold) {
+                if (currentScrollY > lastScrollY && currentScrollY > 100) {
                     header.classList.remove('visible');
                     header.classList.add('hidden');
                 } else if (currentScrollY < lastScrollY) {
@@ -581,213 +186,66 @@
                     header.classList.add('visible');
                 }
                 lastScrollY = currentScrollY;
-            }
-            
-            window.addEventListener('scroll', function() {
-                if (!ticking) {
-                    window.requestAnimationFrame(function() {
-                        handleScroll();
-                        ticking = false;
-                    });
-                    ticking = true;
-                }
             });
         })();
 
-        // 个人中心页面初始化
-        document.addEventListener('DOMContentLoaded', async function() {
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
+        document.addEventListener('DOMContentLoaded', function() {
             const profileContainer = document.getElementById('profileContainer');
             const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
             
             if (!currentUser) {
-                profileContainer.innerHTML = `
-                    <div style="grid-column: 1 / -1;" class="not-login">
-                        <p>🔒 需要登录后才能访问个人中心</p>
-                        <a href="login.html">立即登录</a>
-                    </div>
-                `;
+                profileContainer.innerHTML = '<div style="grid-column: 1 / -1;" class="not-login"><p>🔒 需要登录后才能访问个人中心</p><a href="login.html">立即登录</a></div>';
                 return;
             }
             
-            // 获取用户统计数据
-            let userStats = { posts: 0, favorites: 0, points: 0, signDays: 0 };
-            let favorites = [];
+            const userStats = JSON.parse(localStorage.getItem('userStats_' + currentUser.email) || '{"posts":0,"favorites":0,"points":0,"signDays":0}');
+            const favorites = JSON.parse(localStorage.getItem('favorites_' + currentUser.email) || '[]');
             
-            if (window.FirebaseApp && currentUser.uid) {
-                const userData = await window.FirebaseApp.getUserData(currentUser.uid);
-                userStats = userData?.stats || userStats;
-                favorites = await window.FirebaseApp.getFavorites(currentUser.uid);
-            } else {
-                userStats = JSON.parse(localStorage.getItem('userStats_' + currentUser.email) || JSON.stringify(userStats));
-                favorites = JSON.parse(localStorage.getItem('favorites_' + currentUser.email) || '[]');
-            }
+            profileContainer.innerHTML = '<aside class="sidebar"><div class="avatar-section"><div class="avatar">' + (currentUser.username?.charAt(0) || 'U') + '</div><div class="username">' + (currentUser.username || '用户') + '</div><div class="user-email">' + currentUser.email + '</div></div><ul class="side-menu"><li><a class="active" onclick="showSection(\'info\')">个人信息</a></li><li><a onclick="showSection(\'stats\')">数据统计</a></li><li><a onclick="showSection(\'favorites\')">我的收藏</a></li><li><a onclick="logout()">退出登录</a></li></ul></aside><main class="main-content"><div id="contentArea"></div></main>';
             
-            profileContainer.innerHTML = `
-                <aside class="sidebar">
-                    <div class="avatar-section">
-                        <div class="avatar">${currentUser.username?.charAt(0) || 'U'}</div>
-                        <div class="username">${currentUser.username || '用户'}</div>
-                        <div class="user-email">${currentUser.email}</div>
-                    </div>
-                    <ul class="side-menu">
-                        <li><a href="#" class="active" onclick="showSection('info')">个人信息</a></li>
-                        <li><a href="#" onclick="showSection('stats')">数据统计</a></li>
-                        <li><a href="#" onclick="showSection('favorites')">我的收藏</a></li>
-                        <li><a href="#" onclick="logout()">退出登录</a></li>
-                    </ul>
-                </aside>
-                
-                <main class="main-content">
-                    <div id="contentArea">
-                        <h3 class="content-title">个人信息</h3>
-                        <form class="info-form">
-                            <div class="form-group">
-                                <label>用户名</label>
-                                <input type="text" value="${currentUser.username || ''}" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label>邮箱</label>
-                                <input type="email" value="${currentUser.email || ''}" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label>个性签名</label>
-                                <textarea placeholder="写下你的个性签名..."></textarea>
-                            </div>
-                            <button type="submit" class="submit-btn">保存修改</button>
-                        </form>
-                    </div>
-                </main>
-            `;
+            showSection('info');
         });
 
         function showSection(section) {
             const contentArea = document.getElementById('contentArea');
             const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-            
             if (!currentUser) return;
             
-            // 获取用户统计数据
-            let userStats = { posts: 0, favorites: 0, points: 0, signDays: 0 };
-            let favorites = [];
-            
-            if (window.FirebaseApp && currentUser.uid) {
-                window.FirebaseApp.getUserData(currentUser.uid).then(userData => {
-                    userStats = userData?.stats || userStats;
-                    window.FirebaseApp.getFavorites(currentUser.uid).then(favData => {
-                        favorites = favData;
-                        renderSection(section, userStats, favorites);
-                    });
-                });
-            } else {
-                userStats = JSON.parse(localStorage.getItem('userStats_' + currentUser.email) || JSON.stringify(userStats));
-                favorites = JSON.parse(localStorage.getItem('favorites_' + currentUser.email) || '[]');
-                renderSection(section, userStats, favorites);
-            }
-        }
-
-        function renderSection(section, userStats, favorites) {
-            const contentArea = document.getElementById('contentArea');
+            const userStats = JSON.parse(localStorage.getItem('userStats_' + currentUser.email) || '{"posts":0,"favorites":0,"points":0,"signDays":0}');
+            const favorites = JSON.parse(localStorage.getItem('favorites_' + currentUser.email) || '[]');
             
             if (section === 'info') {
-                const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-                contentArea.innerHTML = `
-                    <h3 class="content-title">个人信息</h3>
-                    <form class="info-form">
-                        <div class="form-group">
-                            <label>用户名</label>
-                            <input type="text" value="${currentUser.username || ''}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>邮箱</label>
-                            <input type="email" value="${currentUser.email || ''}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>个性签名</label>
-                            <textarea placeholder="写下你的个性签名..."></textarea>
-                        </div>
-                        <button type="submit" class="submit-btn">保存修改</button>
-                    </form>
-                `;
+                contentArea.innerHTML = '<h3 class="content-title">个人信息</h3><form class="info-form"><div class="form-group"><label>用户名</label><input type="text" value="' + (currentUser.username || '') + '" readonly></div><div class="form-group"><label>邮箱</label><input type="email" value="' + currentUser.email + '" readonly></div><div class="form-group"><label>个性签名</label><textarea placeholder="写下你的个性签名..."></textarea></div><button type="submit" class="submit-btn">保存修改</button></form>';
             } else if (section === 'stats') {
-                contentArea.innerHTML = `
-                    <h3 class="content-title">数据统计</h3>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-value">${userStats.posts || 0}</div>
-                            <div class="stat-label">发布帖子</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">${userStats.favorites || 0}</div>
-                            <div class="stat-label">收藏内容</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">${userStats.points || 0}</div>
-                            <div class="stat-label">积分</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">${userStats.signDays || 0}</div>
-                            <div class="stat-label">签到天数</div>
-                        </div>
-                    </div>
-                `;
+                contentArea.innerHTML = '<h3 class="content-title">数据统计</h3><div class="stats-grid"><div class="stat-card"><div class="stat-value">' + (userStats.posts || 0) + '</div><div class="stat-label">发布帖子</div></div><div class="stat-card"><div class="stat-value">' + (userStats.favorites || 0) + '</div><div class="stat-label">收藏内容</div></div><div class="stat-card"><div class="stat-value">' + (userStats.points || 0) + '</div><div class="stat-label">积分</div></div><div class="stat-card"><div class="stat-value">' + (userStats.signDays || 0) + '</div><div class="stat-label">签到天数</div></div></div>';
             } else if (section === 'favorites') {
                 if (favorites.length === 0) {
-                    contentArea.innerHTML = `
-                        <h3 class="content-title">我的收藏</h3>
-                        <p style="color:#8991bc;">暂无收藏内容</p>
-                    `;
+                    contentArea.innerHTML = '<h3 class="content-title">我的收藏</h3><p style="color:#8991bc;">暂无收藏内容</p>';
                 } else {
-                    let favoritesHtml = favorites.map((item, index) => `
-                        <div class="favorite-item">
-                            <h4>${item.title || '收藏项 ' + (index + 1)}</h4>
-                            <p>${item.description || ''}</p>
-                            <button class="remove-favorite" onclick="removeFavorite('${item.id}')">取消收藏</button>
-                        </div>
-                    `).join('');
-                    
-                    contentArea.innerHTML = `
-                        <h3 class="content-title">我的收藏</h3>
-                        <div class="favorites-list">${favoritesHtml}</div>
-                    `;
+                    let favoritesHtml = favorites.map((item, index) => '<div class="favorite-item"><h4>' + (item.title || '收藏项 ' + (index + 1)) + '</h4><p>' + (item.description || '') + '</p><button class="remove-favorite" onclick="removeFavorite(\'' + item.id + '\')">取消收藏</button></div>').join('');
+                    contentArea.innerHTML = '<h3 class="content-title">我的收藏</h3><div class="favorites-list">' + favoritesHtml + '</div>';
                 }
             }
         }
 
         function removeFavorite(itemId) {
             const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            const favorites = JSON.parse(localStorage.getItem('favorites_' + currentUser.email) || '[]');
+            const filtered = favorites.filter(f => f.id !== itemId);
+            localStorage.setItem('favorites_' + currentUser.email, JSON.stringify(filtered));
             
-            if (window.FirebaseApp && currentUser.uid) {
-                window.FirebaseApp.removeFavorite(currentUser.uid, itemId).then(() => {
-                    alert('已取消收藏');
-                    showSection('favorites');
-                });
-            } else {
-                const favorites = JSON.parse(localStorage.getItem('favorites_' + currentUser.email) || '[]');
-                const filtered = favorites.filter(f => f.id !== itemId);
-                localStorage.setItem('favorites_' + currentUser.email, JSON.stringify(filtered));
-                
-                const userStats = JSON.parse(localStorage.getItem('userStats_' + currentUser.email) || '{"posts":0,"favorites":0,"points":0,"signDays":0}');
-                userStats.favorites = filtered.length;
-                localStorage.setItem('userStats_' + currentUser.email, JSON.stringify(userStats));
-                
-                alert('已取消收藏');
-                showSection('favorites');
-            }
+            const userStats = JSON.parse(localStorage.getItem('userStats_' + currentUser.email) || '{"posts":0,"favorites":0,"points":0,"signDays":0}');
+            userStats.favorites = filtered.length;
+            localStorage.setItem('userStats_' + currentUser.email, JSON.stringify(userStats));
+            
+            alert('已取消收藏');
+            showSection('favorites');
         }
 
         function logout() {
-            if (window.FirebaseApp) {
-                window.FirebaseApp.logout().then(() => {
-                    alert('已退出登录');
-                    window.location.href = 'index.html';
-                });
-            } else {
-                localStorage.removeItem('currentUser');
-                alert('已退出登录');
-                window.location.href = 'index.html';
-            }
+            localStorage.removeItem('currentUser');
+            alert('已退出登录');
+            window.location.href = 'index.html';
         }
     </script>
 </body>
