@@ -111,12 +111,17 @@
         <div class="auth-box">
             <h2>👤 用户登录</h2>
             
-            <div class="oauth-btns">
+            <div class="login-type-switch" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button type="button" class="oauth-btn active" id="userLoginBtn" onclick="switchLoginType('user')" style="flex:1; background: rgba(124,92,255,0.3);">普通用户</button>
+                <button type="button" class="oauth-btn" id="adminLoginBtn" onclick="switchLoginType('admin')" style="flex:1;">管理员</button>
+            </div>
+            
+            <div class="oauth-btns" id="oauthBtns">
                 <button class="oauth-btn" id="githubLogin">GitHub登录</button>
                 <button class="oauth-btn" id="googleLogin">Google登录</button>
             </div>
 
-            <div class="divider"><span>或使用邮箱登录</span></div>
+            <div class="divider" id="oauthDivider"><span>或使用邮箱登录</span></div>
 
             <form id="loginForm">
                 <div class="form-group">
@@ -130,9 +135,16 @@
                 <button type="submit" class="auth-btn">登 录</button>
             </form>
 
-            <div class="auth-links">
+            <div class="auth-links" id="authLinks">
                 <a href="#">忘记密码？</a> | 
                 <a href="register.html">立即注册</a>
+            </div>
+            
+            <div id="adminHint" style="display: none; margin-top: 20px; padding: 15px; background: rgba(255,100,100,0.1); border: 1px solid rgba(255,100,100,0.3); border-radius: 10px; color: #ff8c8c; font-size: 13px;">
+                <strong>管理员默认账号：</strong><br>
+                邮箱：admin@xiaomotou.com<br>
+                密码：admin888<br>
+                <span style="color: #ffc107; font-size: 12px;">⚠️ 首次登录后请及时修改密码</span>
             </div>
         </div>
     </div>
@@ -214,6 +226,46 @@
             });
         })();
 
+        // 登录类型切换
+        let currentLoginType = 'user';
+        
+        function switchLoginType(type) {
+            currentLoginType = type;
+            const userBtn = document.getElementById('userLoginBtn');
+            const adminBtn = document.getElementById('adminLoginBtn');
+            const oauthBtns = document.getElementById('oauthBtns');
+            const oauthDivider = document.getElementById('oauthDivider');
+            const authLinks = document.getElementById('authLinks');
+            const adminHint = document.getElementById('adminHint');
+            const formTitle = document.querySelector('.auth-box h2');
+            
+            if (type === 'admin') {
+                userBtn.classList.remove('active');
+                userBtn.style.background = 'transparent';
+                adminBtn.classList.add('active');
+                adminBtn.style.background = 'rgba(255,100,150,0.3)';
+                oauthBtns.style.display = 'none';
+                oauthDivider.style.display = 'none';
+                authLinks.style.display = 'none';
+                adminHint.style.display = 'block';
+                formTitle.textContent = '🔧 管理员登录';
+                document.getElementById('loginEmail').value = 'admin@xiaomotou.com';
+                document.getElementById('loginPassword').value = '';
+            } else {
+                adminBtn.classList.remove('active');
+                adminBtn.style.background = 'transparent';
+                userBtn.classList.add('active');
+                userBtn.style.background = 'rgba(124,92,255,0.3)';
+                oauthBtns.style.display = 'flex';
+                oauthDivider.style.display = 'flex';
+                authLinks.style.display = 'block';
+                adminHint.style.display = 'none';
+                formTitle.textContent = '👤 用户登录';
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
+            }
+        }
+
         // 邮箱密码登录
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -230,24 +282,28 @@
                 .then(async (userCredential) => {
                     const user = userCredential.user;
                     
-                    // 保存到本地
-                    localStorage.setItem('currentUser', JSON.stringify({
-                        uid: user.uid,
-                        email: user.email
-                    }));
-                    
-                    // 获取用户名
+                    // 获取用户数据
                     const snapshot = await db.ref('users/' + user.uid).once('value');
                     const userData = snapshot.val();
                     
-                    localStorage.setItem('currentUser', JSON.stringify({
+                    // 保存到本地
+                    const userInfo = {
                         uid: user.uid,
                         email: user.email,
                         username: userData?.username || user.email.split('@')[0]
-                    }));
+                    };
+                    localStorage.setItem('currentUser', JSON.stringify(userInfo));
                     
-                    alert('🎉 登录成功！欢迎回来！');
-                    setTimeout(() => window.location.href = 'index.html', 1500);
+                    // 检查是否是管理员
+                    if (email === 'admin@xiaomotou.com' || userData?.role === 'admin') {
+                        userInfo.role = 'admin';
+                        localStorage.setItem('currentUser', JSON.stringify(userInfo));
+                        alert('🔧 管理员登录成功！');
+                        setTimeout(() => window.location.href = 'admin.html', 1500);
+                    } else {
+                        alert('🎉 登录成功！欢迎回来！');
+                        setTimeout(() => window.location.href = 'index.html', 1500);
+                    }
                 })
                 .catch((error) => {
                     alert('❌ 登录失败：' + error.message);
