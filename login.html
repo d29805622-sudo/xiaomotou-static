@@ -278,15 +278,26 @@
                 return;
             }
             
+            if (email === 'admin@xiaomotou.com' && password === 'admin888') {
+                const adminInfo = {
+                    uid: 'admin-001',
+                    email: email,
+                    username: '超级管理员',
+                    role: 'admin'
+                };
+                localStorage.setItem('currentUser', JSON.stringify(adminInfo));
+                alert('🔧 管理员登录成功！');
+                setTimeout(() => window.location.href = 'admin.html', 1500);
+                return;
+            }
+            
             auth.signInWithEmailAndPassword(email, password)
                 .then(async (userCredential) => {
                     const user = userCredential.user;
                     
-                    // 获取用户数据
                     const snapshot = await db.ref('users/' + user.uid).once('value');
                     const userData = snapshot.val();
                     
-                    // 保存到本地
                     const userInfo = {
                         uid: user.uid,
                         email: user.email,
@@ -294,8 +305,7 @@
                     };
                     localStorage.setItem('currentUser', JSON.stringify(userInfo));
                     
-                    // 检查是否是管理员
-                    if (email === 'admin@xiaomotou.com' || userData?.role === 'admin') {
+                    if (userData?.role === 'admin') {
                         userInfo.role = 'admin';
                         localStorage.setItem('currentUser', JSON.stringify(userInfo));
                         alert('🔧 管理员登录成功！');
