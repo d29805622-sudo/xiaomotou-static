@@ -316,8 +316,30 @@
                     }
                 })
                 .catch((error) => {
-                    alert('❌ 登录失败：' + error.message);
+                    if (error.code && error.code.includes('network')) {
+                        alert('⚠️ 网络连接失败，尝试本地登录');
+                        loginLocally(email, password);
+                    } else {
+                        loginLocally(email, password);
+                    }
                 });
+        
+        function loginLocally(email, password) {
+            const localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
+            const user = localUsers.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                localStorage.setItem('currentUser', JSON.stringify({
+                    uid: user.uid,
+                    email: user.email,
+                    username: user.username
+                }));
+                alert('🎉 登录成功！（本地模式）');
+                setTimeout(() => window.location.href = 'index.html', 1500);
+            } else {
+                alert('❌ 登录失败：邮箱或密码错误');
+            }
+        }
         });
 
         // Google登录

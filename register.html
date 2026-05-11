@@ -160,10 +160,18 @@
             appId: "1:157977593826:web:01c3715943552a579adbbb"
         };
 
-        // 初始化 Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.database();
+        // 初始化 Firebase（带错误处理）
+        let auth, db;
+        let firebaseAvailable = true;
+        
+        try {
+            firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            db = firebase.database();
+        } catch (error) {
+            firebaseAvailable = false;
+            console.log('Firebase 初始化失败，将使用本地存储');
+        }
 
         // 顶部栏折叠
         document.addEventListener('DOMContentLoaded', function() {
@@ -231,36 +239,68 @@
                 return;
             }
             
-            auth.createUserWithEmailAndPassword(email, password)
-                .then(async (userCredential) => {
-                    const user = userCredential.user;
-                    
-                    // 保存用户数据到数据库
-                    await db.ref('users/' + user.uid).set({
-                        username: username,
-                        email: email,
-                        createdAt: firebase.database.ServerValue.TIMESTAMP,
-                        stats: {
-                            posts: 0,
-                            favorites: 0,
-                            points: 0,
-                            signDays: 0
+            if (firebaseAvailable) {
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then(async (userCredential) => {
+                        const user = userCredential.user;
+                        
+                        await db.ref('users/' + user.uid).set({
+                            username: username,
+                            email: email,
+                            createdAt: firebase.database.ServerValue.TIMESTAMP,
+                            stats: {
+                                posts: 0,
+                                favorites: 0,
+                                points: 0,
+                                signDays: 0
+                            }
+                        });
+                        
+                        localStorage.setItem('currentUser', JSON.stringify({
+                            uid: user.uid,
+                            email: user.email,
+                            username: username
+                        }));
+                        
+                        alert('🎉 注册成功！欢迎加入！');
+                        setTimeout(() => window.location.href = 'login.html', 1500);
+                    })
+                    .catch((error) => {
+                        if (error.code && error.code.includes('network')) {
+                            alert('⚠️ 网络连接失败，将使用本地注册');
+                            registerLocally(username, email, password);
+                        } else {
+                            alert('❌ 注册失败：' + error.message);
                         }
                     });
-                    
-                    // 保存到本地
-                    localStorage.setItem('currentUser', JSON.stringify({
-                        uid: user.uid,
-                        email: user.email,
-                        username: username
-                    }));
-                    
-                    alert('🎉 注册成功！欢迎加入！');
-                    setTimeout(() => window.location.href = 'login.html', 1500);
-                })
-                .catch((error) => {
-                    alert('❌ 注册失败：' + error.message);
-                });
+            } else {
+                registerLocally(username, email, password);
+            }
+        
+        function registerLocally(username, email, password) {
+            const users = JSON.parse(localStorage.getItem('localUsers') || '[]');
+            const exists = users.some(u => u.email === email);
+            
+            if (exists) {
+                alert('❌ 该邮箱已被注册！');
+                return;
+            }
+            
+            const newUser = {
+                uid: 'local-' + Date.now(),
+                username: username,
+                email: email,
+                password: password,
+                createdAt: new Date().toISOString(),
+                stats: { posts: 0, favorites: 0, points: 0, signDays: 0 }
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('localUsers', JSON.stringify(users));
+            
+            alert('🎉 注册成功！（本地模式）\n\n注意：本地注册的数据仅保存在当前设备上');
+            setTimeout(() => window.location.href = 'login.html', 1500);
+        }
         });
     </script>
 </body>

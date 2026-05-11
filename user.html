@@ -163,9 +163,17 @@
             appId: "1:157977593826:web:01c3715943552a579adbbb"
         };
 
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.database();
+        let auth, db;
+        let firebaseAvailable = true;
+        
+        try {
+            firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            db = firebase.database();
+        } catch (error) {
+            firebaseAvailable = false;
+            console.log('Firebase 初始化失败，将使用本地存储');
+        }
 
         // 顶部栏折叠
         document.addEventListener('DOMContentLoaded', function() {
@@ -210,23 +218,58 @@
         })();
 
         // 检查登录状态
-        auth.onAuthStateChanged(async function(user) {
+        function loadUserProfile(userData, email) {
             const profileContainer = document.getElementById('profileContainer');
-            
-            if (!user) {
-                profileContainer.innerHTML = '<div style="grid-column: 1 / -1;" class="not-login"><p>🔒 需要登录后才能访问个人中心</p><a href="login.html">立即登录</a></div>';
-                return;
-            }
-            
-            // 获取用户数据
-            const snapshot = await db.ref('users/' + user.uid).once('value');
-            const userData = snapshot.val() || {};
             const stats = userData.stats || { posts: 0, favorites: 0, points: 0, signDays: 0 };
+            const username = userData.username || email.split('@')[0];
             
-            profileContainer.innerHTML = '<aside class="sidebar"><div class="avatar-section"><div class="avatar">' + (userData.username?.charAt(0) || 'U') + '</div><div class="username">' + (userData.username || user.email.split('@')[0]) + '</div><div class="user-email">' + user.email + '</div></div><ul class="side-menu"><li><a class="active" onclick="showSection(\'info\')">个人信息</a></li><li><a onclick="showSection(\'stats\')">数据统计</a></li><li><a onclick="showSection(\'favorites\')">我的收藏</a></li><li><a onclick="logout()">退出登录</a></li></ul></aside><main class="main-content"><div id="contentArea"></div></main>';
-            
+            profileContainer.innerHTML = '<aside class="sidebar"><div class="avatar-section"><div class="avatar">' + (username.charAt(0) || 'U') + '</div><div class="username">' + username + '</div><div class="user-email">' + email + '</div></div><ul class="side-menu"><li><a class="active" onclick="showSection(\'info\')">个人信息</a></li><li><a onclick="showSection(\'stats\')">数据统计</a></li><li><a onclick="showSection(\'favorites\')">我的收藏</a></li><li><a onclick="logout()">退出登录</a></li></ul></aside><main class="main-content"><div id="contentArea"></div></main>';
             showSection('info');
-        });
+        }
+        
+        if (firebaseAvailable) {
+            auth.onAuthStateChanged(async function(user) {
+                const profileContainer = document.getElementById('profileContainer');
+                
+                if (!user) {
+                    const localUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+                    if (localUser && localUser.uid.startsWith('local-')) {
+                        const localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
+                        const userData = localUsers.find(u => u.email === localUser.email) || {};
+                        loadUserProfile(userData, localUser.email);
+                        return;
+                    }
+                    profileContainer.innerHTML = '<div style="grid-column: 1 / -1;" class="not-login"><p>🔒 需要登录后才能访问个人中心</p><a href="login.html">立即登录</a></div>';
+                    return;
+                }
+                
+                try {
+                    const snapshot = await db.ref('users/' + user.uid).once('value');
+                    const userData = snapshot.val() || {};
+                    loadUserProfile(userData, user.email);
+                } catch (error) {
+                    if (error.code && error.code.includes('network')) {
+                        const localUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+                        if (localUser) {
+                            const localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
+                            const userData = localUsers.find(u => u.email === localUser.email) || {};
+                            loadUserProfile(userData, localUser.email);
+                        }
+                    } else {
+                        profileContainer.innerHTML = '<div style="grid-column: 1 / -1;" class="not-login"><p>❌ 获取用户数据失败</p><a href="login.html">重新登录</a></div>';
+                    }
+                }
+            });
+        } else {
+            const localUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            if (!localUser) {
+                document.getElementById('profileContainer').innerHTML = '<div style="grid-column: 1 / -1;" class="not-login"><p>🔒 需要登录后才能访问个人中心</p><a href="login.html">立即登录</a></div>';
+            } else {
+                const localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
+                const userData = localUsers.find(u => u.email === localUser.email) || {};
+                loadUserProfile(userData, localUser.email);
+            }
+        }
 
         function showSection(section) {
             const contentArea = document.getElementById('contentArea');
