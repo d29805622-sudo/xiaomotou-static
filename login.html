@@ -179,10 +179,18 @@
             appId: "1:157977593826:web:01c3715943552a579adbbb"
         };
 
-        // 初始化 Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.database();
+        // 初始化 Firebase（带网络检测和错误处理）
+        let auth, db;
+        let firebaseAvailable = true;
+        
+        try {
+            firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            db = firebase.database();
+        } catch (error) {
+            firebaseAvailable = false;
+            console.log('Firebase 初始化失败，使用本地模式');
+        }
 
         // 顶部栏折叠
         document.addEventListener('DOMContentLoaded', function() {
@@ -291,38 +299,42 @@
                 return;
             }
             
-            auth.signInWithEmailAndPassword(email, password)
-                .then(async (userCredential) => {
-                    const user = userCredential.user;
-                    
-                    const snapshot = await db.ref('users/' + user.uid).once('value');
-                    const userData = snapshot.val();
-                    
-                    const userInfo = {
-                        uid: user.uid,
-                        email: user.email,
-                        username: userData?.username || user.email.split('@')[0]
-                    };
-                    localStorage.setItem('currentUser', JSON.stringify(userInfo));
-                    
-                    if (userData?.role === 'admin') {
-                        userInfo.role = 'admin';
+            if (firebaseAvailable) {
+                auth.signInWithEmailAndPassword(email, password)
+                    .then(async (userCredential) => {
+                        const user = userCredential.user;
+                        
+                        const snapshot = await db.ref('users/' + user.uid).once('value');
+                        const userData = snapshot.val();
+                        
+                        const userInfo = {
+                            uid: user.uid,
+                            email: user.email,
+                            username: userData?.username || user.email.split('@')[0]
+                        };
                         localStorage.setItem('currentUser', JSON.stringify(userInfo));
-                        alert('🔧 管理员登录成功！');
-                        setTimeout(() => window.location.href = 'admin.html', 1500);
-                    } else {
-                        alert('🎉 登录成功！欢迎回来！');
-                        setTimeout(() => window.location.href = 'index.html', 1500);
-                    }
-                })
-                .catch((error) => {
-                    if (error.code && error.code.includes('network')) {
-                        alert('⚠️ 网络连接失败，尝试本地登录');
-                        loginLocally(email, password);
-                    } else {
-                        loginLocally(email, password);
-                    }
-                });
+                        
+                        if (userData?.role === 'admin') {
+                            userInfo.role = 'admin';
+                            localStorage.setItem('currentUser', JSON.stringify(userInfo));
+                            alert('🔧 管理员登录成功！');
+                            setTimeout(() => window.location.href = 'admin.html', 1500);
+                        } else {
+                            alert('🎉 登录成功！欢迎回来！');
+                            setTimeout(() => window.location.href = 'index.html', 1500);
+                        }
+                    })
+                    .catch((error) => {
+                        if (error.code && error.code.includes('network')) {
+                            alert('⚠️ 网络连接失败，尝试本地登录');
+                            loginLocally(email, password);
+                        } else {
+                            loginLocally(email, password);
+                        }
+                    });
+            } else {
+                loginLocally(email, password);
+            }
         
         function loginLocally(email, password) {
             const localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
