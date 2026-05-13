@@ -27,6 +27,10 @@
         .header { background: rgba(18, 21, 39, 0.95); backdrop-filter: blur(16px); position: sticky; top: 0; z-index: 999; border-bottom: 1px solid rgba(124, 92, 255, 0.18); transition: all 0.3s ease; }
         .header.hidden { transform: translateY(-100%); position: fixed; top: 0; left: 0; right: 0; }
         .header.visible { transform: translateY(0); position: sticky; }
+        .nav-menu { display: none; }
+        .nav-menu.expanded { display: flex; }
+        .menu-toggle { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: rgba(138, 108, 255, 0.2); border: 1px solid rgba(138, 108, 255, 0.4); color: #c0b4ff; cursor: pointer; font-size: 18px; }
+        .menu-toggle:hover { background: rgba(138, 108, 255, 0.3); }
         .nav { display: flex; justify-content: space-between; align-items: center; min-height: 60px; flex-wrap: wrap; gap:15px; padding:8px 0; }
         .nav-logo { font-size: 22px; font-weight: 700; background: linear-gradient(90deg,#7c62ff,#e288ff); -webkit-background-clip: text; color: transparent; letter-spacing: 2px; }
         .nav-menu { display: flex; flex-wrap: wrap; gap: 5px; }
@@ -124,7 +128,8 @@
     <header class="header" id="mainHeader">
         <div class="container nav">
             <a href="index.html" class="nav-logo">同人创作平台</a>
-            <div class="nav-menu">
+            <button class="menu-toggle" id="menuToggle" onclick="toggleNavMenu()">☰</button>
+            <div class="nav-menu" id="navMenu">
                 <a href="game.html">游戏资源</a>
                 <a href="mod.html">MOD模组</a>
                 <a href="play.html">在线游玩</a>
@@ -239,6 +244,16 @@
             console.log('Firebase 初始化失败，使用本地模式');
         }
 
+        function toggleNavMenu() {
+            const navMenu = document.getElementById('navMenu');
+            const menuToggle = document.getElementById('menuToggle');
+            
+            if (navMenu) {
+                navMenu.classList.toggle('expanded');
+                menuToggle.textContent = navMenu.classList.contains('expanded') ? '✕' : '☰';
+            }
+        }
+        
         // 顶部栏折叠
         document.addEventListener('DOMContentLoaded', function() {
             const topBar = document.getElementById('topBar');

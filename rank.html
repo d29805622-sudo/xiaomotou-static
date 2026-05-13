@@ -104,7 +104,8 @@
     <header class="header" id="mainHeader">
         <div class="container nav">
             <a href="index.html" class="nav-logo">同人创作平台</a>
-            <div class="nav-menu">
+            <button class="menu-toggle" id="menuToggle" onclick="toggleNavMenu()">☰</button>
+            <div class="nav-menu" id="navMenu">
                 <a href="game.html">游戏资源</a>
                 <a href="mod.html">MOD模组</a>
                 <a href="play.html">在线游玩</a>
@@ -199,6 +200,16 @@
     <script src="js/common.js"></script>
     <script src="js/script.js"></script>
     <script>
+        function toggleNavMenu() {
+            const navMenu = document.getElementById('navMenu');
+            const menuToggle = document.getElementById('menuToggle');
+            
+            if (navMenu) {
+                navMenu.classList.toggle('expanded');
+                menuToggle.textContent = navMenu.classList.contains('expanded') ? '✕' : '☰';
+            }
+        }
+        
         // 顶部栏折叠功能
         document.addEventListener('DOMContentLoaded', function() {
             const topBar = document.getElementById('topBar');
