@@ -1080,16 +1080,23 @@
             }
 
             let localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
-            const userIndex = localUsers.findIndex(lu => lu.email === user.email);
+            let userIndex = localUsers.findIndex(lu => lu.email === user.email);
 
             if (userIndex !== -1) {
                 localUsers[userIndex].password = newPassword;
-                localStorage.setItem('localUsers', JSON.stringify(localUsers));
-                closeModal('change-password-modal');
-                alert('密码修改成功！\n\n用户名：' + user.username + '\n新密码：' + newPassword);
             } else {
-                alert('该用户尚未在网站上注册过账号，无法修改密码！\n\n提示：请让用户先在网站上完成注册。');
+                localUsers.push({
+                    uid: 'admin-set-' + Date.now(),
+                    username: user.username,
+                    email: user.email,
+                    password: newPassword,
+                    createdAt: new Date().toISOString()
+                });
             }
+            
+            localStorage.setItem('localUsers', JSON.stringify(localUsers));
+            closeModal('change-password-modal');
+            alert('密码修改成功！\n\n用户名：' + user.username + '\n新密码：' + newPassword);
         });
 
         function viewFeedback(id) {
