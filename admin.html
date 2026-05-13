@@ -39,10 +39,12 @@
         table th { color: #8892b0; font-weight: 500; }
         table tr:hover { background: rgba(124,92,255,0.1); }
 
-        .action-btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; }
+        .action-btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; font-size: 12px; }
         .action-btn.edit { background: #4ecdc4; color: #fff; }
         .action-btn.delete { background: #ff6b6b; color: #fff; }
         .action-btn.view { background: #8264ff; color: #fff; }
+        .action-btn.approve { background: #2ecc71; color: #fff; }
+        .action-btn.reject { background: #e74c3c; color: #fff; }
 
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; color: #8892b0; }
@@ -55,7 +57,7 @@
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000; }
         .modal.show { display: flex; }
-        .modal-content { background: #1a1f3a; padding: 30px; border-radius: 12px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: #1a1f3a; padding: 30px; border-radius: 12px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
         .modal-content h3 { margin-bottom: 20px; }
         .modal-close { float: right; cursor: pointer; color: #8892b0; font-size: 24px; }
 
@@ -63,6 +65,14 @@
         .status-pending { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
         .status-processed { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
         .status-rejected { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+        .status-approved { background: rgba(52, 152, 219, 0.2); color: #3498db; }
+
+        .review-history { margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(124,92,255,0.2); }
+        .review-item { padding: 10px; background: #0f1223; border-radius: 6px; margin-bottom: 8px; font-size: 13px; }
+        .review-item .reviewer { color: #8264ff; font-weight: 500; }
+        .review-item .action { color: #2ecc71; }
+        .review-item .rejected { color: #e74c3c; }
+        .review-item .time { color: #8892b0; font-size: 11px; }
 
         @media (max-width: 768px) {
             .dashboard-cards { grid-template-columns: repeat(2, 1fr); }
@@ -70,6 +80,7 @@
             .admin-container { flex-direction: column; }
             table { font-size: 12px; }
             table th, table td { padding: 8px; }
+            .action-btn { margin-bottom: 5px; }
         }
 
         .top-bar {
@@ -150,6 +161,11 @@
                         <div class="card-title">待处理反馈</div>
                         <div class="card-value" id="pending-feedback">8</div>
                     </div>
+                    <div class="card">
+                        <div class="card-icon">📝</div>
+                        <div class="card-title">待审核内容</div>
+                        <div class="card-value" id="pending-content">5</div>
+                    </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
@@ -158,8 +174,8 @@
                         <div id="latest-announcements"></div>
                     </div>
                     <div class="section" style="margin-bottom: 0;">
-                        <h3 style="margin-bottom: 15px;">📮 最新反馈</h3>
-                        <div id="latest-feedback"></div>
+                        <h3 style="margin-bottom: 15px;">📝 待审核内容</h3>
+                        <div id="pending-content-list"></div>
                     </div>
                 </div>
             </div>
@@ -249,6 +265,12 @@
             <div id="content" class="section" style="display: none;">
                 <div class="section-title">
                     <h3>📝 内容审核</h3>
+                    <select id="content-filter" onchange="filterContent()" style="padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(124,92,255,0.3); background: #0f1223; color: #fff;">
+                        <option value="all">全部内容</option>
+                        <option value="pending">待审核</option>
+                        <option value="approved">已通过</option>
+                        <option value="rejected">已拒绝</option>
+                    </select>
                 </div>
                 <table>
                     <thead>
@@ -258,6 +280,7 @@
                             <th>作者</th>
                             <th>类型</th>
                             <th>状态</th>
+                            <th>审核次数</th>
                             <th>提交时间</th>
                             <th>操作</th>
                         </tr>
@@ -411,6 +434,7 @@
             <div id="user-detail-content"></div>
             <div class="form-actions" style="margin-top: 20px;">
                 <button class="action-btn edit" onclick="showChangePasswordModal()">🔑 修改密码</button>
+                <button class="action-btn delete" onclick="confirmDeleteUser(currentUserId)">🗑️ 删除用户</button>
                 <button class="btn-cancel" onclick="closeModal('user-detail-modal')">关闭</button>
             </div>
         </div>
@@ -438,10 +462,40 @@
         </div>
     </div>
 
+    <div id="content-detail-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('content-detail-modal')">&times;</span>
+            <h3>📝 内容详情</h3>
+            <div id="content-detail-content"></div>
+            <div class="review-history" id="review-history"></div>
+            <div class="form-actions" style="margin-top: 20px;">
+                <button class="action-btn approve" onclick="approveContent(currentContentId)">✅ 同意发布</button>
+                <button class="action-btn reject" onclick="showRejectModal()">❌ 驳回</button>
+                <button class="btn-cancel" onclick="closeModal('content-detail-modal')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="reject-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('reject-modal')">&times;</span>
+            <h3>❌ 驳回内容</h3>
+            <div class="form-group">
+                <label>驳回原因</label>
+                <textarea id="reject-reason" placeholder="请输入驳回原因，将发送给作者" required></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-submit" onclick="rejectContentWithReason()">确认驳回</button>
+                <button type="button" class="btn-cancel" onclick="closeModal('reject-modal')">取消</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let currentFeedbackId = null;
         let currentUserId = null;
         let currentUserEmail = null;
+        let currentContentId = null;
 
         function initData() {
             if (!localStorage.getItem('events')) {
@@ -494,10 +548,11 @@
             }
             if (!localStorage.getItem('content')) {
                 localStorage.setItem('content', JSON.stringify([
-                    { id: 1, title: '我的第一篇创作', author: '用户A', type: 'article', status: 'pending', createdAt: '2024-05-11 08:30' },
-                    { id: 2, title: '游戏攻略分享', author: '用户B', type: 'guide', status: 'approved', createdAt: '2024-05-10 14:20' },
-                    { id: 3, title: '同人小说', author: '用户D', type: 'novel', status: 'pending', createdAt: '2024-05-11 09:45' },
-                    { id: 4, title: '精美CG分享', author: '用户C', type: 'image', status: 'rejected', createdAt: '2024-05-09 16:00' },
+                    { id: 1, title: '我的第一篇创作', author: '用户A', type: 'article', content: '这是我的第一篇同人创作作品，希望大家喜欢！', tags: ['同人', '原创'], status: 'pending', createdAt: '2024-05-11 08:30', reviewHistory: [] },
+                    { id: 2, title: '游戏攻略分享', author: '用户B', type: 'guide', content: '分享一下我总结的游戏攻略，希望对大家有帮助。', tags: ['攻略', '游戏'], status: 'approved', createdAt: '2024-05-10 14:20', reviewHistory: [{ reviewer: '超级管理员', action: 'approved', time: '2024-05-10 15:00', comment: '内容优质，通过审核' }] },
+                    { id: 3, title: '同人小说', author: '用户D', type: 'novel', content: '这是一部同人小说，讲述了主角的冒险故事...', tags: ['小说', '同人'], status: 'pending', createdAt: '2024-05-11 09:45', reviewHistory: [] },
+                    { id: 4, title: '精美CG分享', author: '用户C', type: 'image', content: '分享一些我绘制的CG作品，希望大家喜欢！', tags: ['CG', '插画'], status: 'rejected', createdAt: '2024-05-09 16:00', reviewHistory: [{ reviewer: '超级管理员', action: 'rejected', time: '2024-05-09 16:30', comment: '内容不符合社区规范' }], rejectReason: '内容不符合社区规范' },
+                    { id: 5, title: '角色分析', author: '用户A', type: 'article', content: '对游戏中主要角色的深入分析...', tags: ['角色', '分析'], status: 'pending', createdAt: '2024-05-11 10:00', reviewHistory: [] },
                 ]));
             }
         }
@@ -533,6 +588,10 @@
             const pendingCount = feedback.filter(f => f.status === 'pending').length;
             document.getElementById('pending-feedback').textContent = pendingCount;
 
+            const content = JSON.parse(localStorage.getItem('content') || '[]');
+            const pendingContentCount = content.filter(c => c.status === 'pending').length;
+            document.getElementById('pending-content').textContent = pendingContentCount;
+
             const announcements = JSON.parse(localStorage.getItem('announcements') || '[]');
             document.getElementById('total-announcements').textContent = announcements.length;
 
@@ -558,10 +617,10 @@
                 </div>`
             ).join('');
 
-            document.getElementById('latest-feedback').innerHTML = feedback.slice(0, 3).map(f =>
+            document.getElementById('pending-content-list').innerHTML = content.filter(c => c.status === 'pending').slice(0, 3).map(c =>
                 `<div style="padding: 10px; border-bottom: 1px solid rgba(124,92,255,0.1);">
-                    <div style="font-weight: 500;">${f.title}</div>
-                    <div style="font-size: 12px; color: #8892b0; margin-top: 5px;">${f.username} · ${f.createdAt}</div>
+                    <div style="font-weight: 500;">${c.title}</div>
+                    <div style="font-size: 12px; color: #8892b0; margin-top: 5px;">${c.author} · ${c.createdAt}</div>
                 </div>`
             ).join('');
         }
@@ -662,6 +721,7 @@
                     <td>
                         <button class="action-btn view" onclick="viewUser(${user.id})">查看</button>
                         <button class="action-btn edit" onclick="toggleUserStatus(${user.id})">${user.status === 'active' ? '封禁' : '解封'}</button>
+                        <button class="action-btn delete" onclick="confirmDeleteUser(${user.id})">删除</button>
                     </td>
                 </tr>
             `).join('');
@@ -710,6 +770,31 @@
             }
         }
 
+        function confirmDeleteUser(userId) {
+            if (!confirm('⚠️ 警告：删除用户将永久删除该用户的所有数据，包括发布的内容和反馈记录。确定要删除吗？')) {
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
+            const content = JSON.parse(localStorage.getItem('content') || '[]');
+            const feedback = JSON.parse(localStorage.getItem('feedback') || '[]');
+
+            const user = users.find(u => u.id === userId);
+            
+            if (user) {
+                localStorage.setItem('users', JSON.stringify(users.filter(u => u.id !== userId)));
+                localStorage.setItem('localUsers', JSON.stringify(localUsers.filter(u => u.email !== user.email)));
+                localStorage.setItem('content', JSON.stringify(content.filter(c => c.author !== user.username)));
+                localStorage.setItem('feedback', JSON.stringify(feedback.filter(f => f.userId !== userId)));
+                
+                closeModal('user-detail-modal');
+                loadUsers();
+                loadDashboard();
+                alert('用户删除成功！');
+            }
+        }
+
         function showChangePasswordModal() {
             document.getElementById('change-password-form').reset();
             document.getElementById('user-detail-modal').classList.remove('show');
@@ -724,24 +809,163 @@
             document.getElementById('change-password-modal').classList.add('show');
         }
 
-        function loadContent() {
-            const content = JSON.parse(localStorage.getItem('content') || '[]');
+        function loadContent(filter = 'all') {
+            let content = JSON.parse(localStorage.getItem('content') || '[]');
+
+            if (filter !== 'all') {
+                content = content.filter(c => c.status === filter);
+            }
+
             const typeMap = { article: '文章', guide: '攻略', novel: '小说', image: '图片' };
             const statusMap = { pending: '待审核', approved: '已通过', rejected: '已拒绝' };
+            const statusClass = { pending: 'status-pending', approved: 'status-approved', rejected: 'status-rejected' };
+
             document.getElementById('content-table-body').innerHTML = content.map(c => `
                 <tr>
                     <td>${c.id}</td>
                     <td>${c.title}</td>
                     <td>${c.author}</td>
                     <td>${typeMap[c.type]}</td>
-                    <td><span class="status-badge status-${c.status}">${statusMap[c.status]}</span></td>
+                    <td><span class="status-badge ${statusClass[c.status]}">${statusMap[c.status]}</span></td>
+                    <td>${c.reviewHistory?.length || 0} 次</td>
                     <td>${c.createdAt}</td>
                     <td>
-                        ${c.status === 'pending' ? `<button class="action-btn edit" onclick="approveContent(${c.id})">通过</button>` : ''}
-                        ${c.status !== 'rejected' ? `<button class="action-btn delete" onclick="rejectContent(${c.id})">拒绝</button>` : ''}
+                        <button class="action-btn view" onclick="viewContent(${c.id})">查看</button>
+                        ${c.status === 'pending' ? `
+                            <button class="action-btn approve" onclick="approveContent(${c.id})">同意</button>
+                            <button class="action-btn reject" onclick="currentContentId=${c.id};showRejectModal()">驳回</button>
+                        ` : ''}
                     </td>
                 </tr>
             `).join('');
+        }
+
+        function filterContent() {
+            const filter = document.getElementById('content-filter').value;
+            loadContent(filter);
+        }
+
+        function viewContent(contentId) {
+            const content = JSON.parse(localStorage.getItem('content') || '[]');
+            const item = content.find(c => c.id === contentId);
+            currentContentId = contentId;
+
+            if (item) {
+                const typeMap = { article: '文章', guide: '攻略', novel: '小说', image: '图片' };
+                const statusMap = { pending: '待审核', approved: '已通过', rejected: '已拒绝' };
+
+                document.getElementById('content-detail-content').innerHTML = `
+                    <div class="form-group">
+                        <label>标题</label>
+                        <div style="padding: 10px; background: #0f1223; border-radius: 6px;">${item.title}</div>
+                    </div>
+                    <div class="form-group">
+                        <label>作者</label>
+                        <div style="padding: 10px; background: #0f1223; border-radius: 6px;">${item.author}</div>
+                    </div>
+                    <div class="form-group">
+                        <label>类型</label>
+                        <div style="padding: 10px; background: #0f1223; border-radius: 6px;">${typeMap[item.type]}</div>
+                    </div>
+                    <div class="form-group">
+                        <label>标签</label>
+                        <div style="padding: 10px; background: #0f1223; border-radius: 6px;">${item.tags?.join(', ') || '无'}</div>
+                    </div>
+                    <div class="form-group">
+                        <label>状态</label>
+                        <div style="padding: 10px; background: #0f1223; border-radius: 6px;">${statusMap[item.status]}</div>
+                    </div>
+                    ${item.rejectReason ? `
+                        <div class="form-group">
+                            <label>驳回原因</label>
+                            <div style="padding: 10px; background: rgba(231, 76, 60, 0.1); border-radius: 6px; color: #e74c3c;">${item.rejectReason}</div>
+                        </div>
+                    ` : ''}
+                    <div class="form-group">
+                        <label>内容</label>
+                        <div style="padding: 10px; background: #0f1223; border-radius: 6px; white-space: pre-wrap;">${item.content}</div>
+                    </div>
+                    <div class="form-group">
+                        <label>提交时间</label>
+                        <div style="padding: 10px; background: #0f1223; border-radius: 6px;">${item.createdAt}</div>
+                    </div>
+                `;
+
+                const history = item.reviewHistory || [];
+                if (history.length > 0) {
+                    document.getElementById('review-history').innerHTML = `
+                        <h4 style="margin-bottom: 10px; color: #8264ff;">审核历史</h4>
+                        ${history.map((h, i) => `
+                            <div class="review-item">
+                                <span class="reviewer">${h.reviewer}</span>
+                                <span class="${h.action === 'approved' ? 'action' : 'rejected'}">${h.action === 'approved' ? '同意' : '驳回'}</span>
+                                <span class="time">${h.time}</span>
+                                ${h.comment ? `<div style="margin-top: 5px; color: #8892b0;">备注：${h.comment}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    `;
+                } else {
+                    document.getElementById('review-history').innerHTML = '';
+                }
+
+                document.getElementById('content-detail-modal').classList.add('show');
+            }
+        }
+
+        function showRejectModal() {
+            document.getElementById('reject-reason').value = '';
+            document.getElementById('content-detail-modal').classList.remove('show');
+            document.getElementById('reject-modal').classList.add('show');
+        }
+
+        function approveContent(contentId) {
+            const content = JSON.parse(localStorage.getItem('content') || '[]');
+            const updated = content.map(c => {
+                if (c.id === contentId) {
+                    const newHistory = c.reviewHistory || [];
+                    newHistory.push({
+                        reviewer: '超级管理员',
+                        action: 'approved',
+                        time: new Date().toLocaleString('zh-CN'),
+                        comment: '内容符合规范，同意发布'
+                    });
+                    return { ...c, status: 'approved', reviewHistory: newHistory };
+                }
+                return c;
+            });
+            localStorage.setItem('content', JSON.stringify(updated));
+            closeModal('content-detail-modal');
+            loadContent();
+            loadDashboard();
+            alert('内容已通过审核！');
+        }
+
+        function rejectContentWithReason() {
+            const reason = document.getElementById('reject-reason').value;
+            if (!reason.trim()) {
+                alert('请输入驳回原因！');
+                return;
+            }
+
+            const content = JSON.parse(localStorage.getItem('content') || '[]');
+            const updated = content.map(c => {
+                if (c.id === currentContentId) {
+                    const newHistory = c.reviewHistory || [];
+                    newHistory.push({
+                        reviewer: '超级管理员',
+                        action: 'rejected',
+                        time: new Date().toLocaleString('zh-CN'),
+                        comment: reason
+                    });
+                    return { ...c, status: 'rejected', reviewHistory: newHistory, rejectReason: reason };
+                }
+                return c;
+            });
+            localStorage.setItem('content', JSON.stringify(updated));
+            closeModal('reject-modal');
+            loadContent();
+            loadDashboard();
+            alert('内容已驳回，驳回原因已记录！');
         }
 
         function showAdminModal() {
@@ -961,22 +1185,6 @@
             alert('编辑功能待完善！');
         }
 
-        function approveContent(id) {
-            const content = JSON.parse(localStorage.getItem('content') || '[]');
-            const updated = content.map(c => c.id === id ? { ...c, status: 'approved' } : c);
-            localStorage.setItem('content', JSON.stringify(updated));
-            loadContent();
-            alert('内容已通过审核！');
-        }
-
-        function rejectContent(id) {
-            const content = JSON.parse(localStorage.getItem('content') || '[]');
-            const updated = content.map(c => c.id === id ? { ...c, status: 'rejected' } : c);
-            localStorage.setItem('content', JSON.stringify(updated));
-            loadContent();
-            alert('内容已拒绝！');
-        }
-
         function logout() {
             if (confirm('确定要退出登录吗？')) {
                 window.location.href = 'login.html';
@@ -985,83 +1193,6 @@
 
         initData();
         showSection('dashboard');
-
-
-        let collapseTimer = null;
-        let lastActivity = Date.now();
-        const COLLAPSE_DELAY = 5000;
-        let isCollapsed = false;
-
-        function throttleCollapse(func, limit = 16) {
-            let inThrottle = false;
-            return function() {
-                const context = this;
-                const args = arguments;
-                if (!inThrottle) {
-                    func.apply(context, args);
-                    inThrottle = true;
-                    setTimeout(() => inThrottle = false, limit);
-                }
-            };
-        }
-
-        function resetCollapseTimer() {
-            lastActivity = Date.now();
-            if (collapseTimer) {
-                clearTimeout(collapseTimer);
-            }
-            if (isCollapsed) {
-                expandAll();
-            }
-            collapseTimer = setTimeout(() => {
-                autoCollapse();
-            }, COLLAPSE_DELAY);
-        }
-
-        function autoCollapse() {
-            const topBar = document.getElementById('topBar');
-            const header = document.getElementById('mainHeader');
-
-            if (topBar && !topBar.classList.contains('collapsed')) {
-                topBar.classList.add('collapsed');
-                localStorage.setItem('topBarCollapsed', 'true');
-            }
-            if (header && !header.classList.contains('hidden')) {
-                header.classList.add('hidden');
-                header.classList.remove('visible');
-            }
-            isCollapsed = true;
-        }
-
-        function expandAll() {
-            const topBar = document.getElementById('topBar');
-            const header = document.getElementById('mainHeader');
-
-            if (topBar) {
-                topBar.classList.remove('collapsed');
-                localStorage.setItem('topBarCollapsed', 'false');
-            }
-            if (header) {
-                header.classList.remove('hidden');
-                header.classList.add('visible');
-            }
-            isCollapsed = false;
-            resetCollapseTimer();
-        }
-
-        const throttledExpand = throttleCollapse(expandAll);
-
-        document.addEventListener('mousemove', throttledExpand, { passive: true });
-        document.addEventListener('scroll', throttledExpand, { passive: true });
-        document.addEventListener('keydown', throttledExpand, { passive: true });
-        document.addEventListener('click', throttledExpand, { passive: true });
-        document.addEventListener('touchstart', throttledExpand, { passive: true });
-        document.addEventListener('touchmove', throttledExpand, { passive: true });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            resetCollapseTimer();
-        });
-
     </script>
 </body>
 </html>
