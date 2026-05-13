@@ -53,6 +53,7 @@
         batchUpdate(() => {
             document.body.classList.add('loaded');
         });
+        updateLoginStatus();
     });
     
     // =====================
