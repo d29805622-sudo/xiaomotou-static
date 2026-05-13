@@ -13,7 +13,21 @@
         p { color: #9fa6d2; margin-bottom: 15px; font-size: 15px; }
         a { color: #a898ff; }
         .back { display: inline-block; margin-top: 30px; padding: 10px 20px; background: linear-gradient(135deg,#583ed8,#8c64f8); border-radius: 20px; color: #fff; }
-    </style>
+    
+        .top-bar {
+            transition: all 0.3s ease;
+        }
+        .top-bar.collapsed {
+            transform: translateY(-100%);
+            margin-bottom: -60px;
+        }
+        .header {
+            transition: all 0.3s ease;
+        }
+        .header.hidden {
+            transform: translateY(-100%);
+        }
+</style>
 </head>
 <body>
     <div class="container">

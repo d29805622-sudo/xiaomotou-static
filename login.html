@@ -47,8 +47,13 @@
         .form-group label { display: block; margin-bottom: 8px; color: #c5cbe8; }
         .form-group input { width: 100%; padding: 14px 16px; border: 1px solid rgba(124,92,255,0.3); border-radius: 10px; background: rgba(20,23,45,0.7); color: #fff; font-size: 15px; outline: none; transition: 0.3s; }
         .form-group input:focus { border-color: #8064ff; box-shadow: 0 0 15px rgba(124,92,255,0.25); }
-        .auth-btn { width: 100%; padding: 14px; background: linear-gradient(135deg,#583ed8,#8c64f8); color: #fff; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; transition: all 0.3s; }
+        .auth-btn { width: 100%; padding: 14px; background: linear-gradient(135deg,#583ed8,#8c64f8); color: #fff; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
         .auth-btn:hover { box-shadow: 0 4px 14px rgba(88,62,216,0.4); transform: translateY(-2px); }
+        .auth-btn:active { transform: translateY(0); }
+        .auth-btn.loading { background: linear-gradient(135deg,#6a5acd,#7a6ad6); cursor: not-allowed; opacity: 0.8; }
+        .auth-btn.loading span { display: none; }
+        .auth-btn.loading::after { content: ''; position: absolute; top: 50%; left: 50%; width: 20px; height: 20px; margin: -10px 0 0 -10px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 0.6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
         .auth-links { text-align: center; margin-top: 20px; color: #8991bc; }
         .auth-links a { color: #a898ff; }
         .oauth-btns { display: flex; gap: 10px; margin-bottom: 25px; }
@@ -64,8 +69,43 @@
         .tool-item { width: 42px; height: 42px; border-radius: 50%; background: rgba(35,38,70,0.8); backdrop-filter: blur(8px); border: 1px solid rgba(124,92,255,0.3); color: #c8bfff; text-align: center; line-height: 42px; box-shadow: 0 4px 16px rgba(0,0,0,0.25); font-size:14px; cursor:pointer; }
         .kanban { position: fixed; right: 15px; bottom: 30px; z-index: 997; cursor:pointer; }
         .kanban img { width:75px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.35); border: 1px solid rgba(130,100,255,0.25); }
+        .kanban-name {
+            position: absolute;
+            bottom: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(130, 100, 255, 0.9), rgba(255, 100, 150, 0.9));
+            color: #fff;
+            font-size: 13px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            white-space: nowrap;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
         .loading { text-align: center; padding: 60px; color: #a898ff; }
-    </style>
+    
+        /* 高性能回缩动画 */
+        .top-bar {
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.25s ease, 
+                        margin-bottom 0.25s ease;
+            will-change: transform;
+            backface-visibility: hidden;
+        }
+        .top-bar.collapsed {
+            transform: translateY(-100%) translateZ(0);
+            margin-bottom: -60px;
+        }
+        .header {
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+            backface-visibility: hidden;
+        }
+        .header.hidden {
+            transform: translateY(-100%) translateZ(0);
+        }
+</style>
 </head>
 <body>
     <div class="top-bar" id="topBar">
@@ -121,22 +161,28 @@
                 <button class="oauth-btn" id="googleLogin">Google登录</button>
             </div>
 
-            <div class="divider" id="oauthDivider"><span>或使用邮箱登录</span></div>
+            <div class="divider" id="oauthDivider"><span>或使用账号登录</span></div>
+
+            <!-- 登录方式切换 -->
+            <div class="login-method-switch" style="display: flex; gap: 8px; margin-bottom: 15px;">
+                <button type="button" class="oauth-btn active" id="emailLoginBtn" onclick="switchLoginMethod('email')" style="flex:1; background: rgba(124,92,255,0.3);">邮箱登录</button>
+                <button type="button" class="oauth-btn" id="usernameLoginBtn" onclick="switchLoginMethod('username')" style="flex:1;">用户名登录</button>
+            </div>
 
             <form id="loginForm">
                 <div class="form-group">
-                    <label>邮箱账号</label>
-                    <input type="email" id="loginEmail" placeholder="请输入邮箱" required>
+                    <label id="loginLabel">邮箱账号</label>
+                    <input type="text" id="loginInput" placeholder="请输入邮箱" required>
                 </div>
                 <div class="form-group">
                     <label>登录密码</label>
                     <input type="password" id="loginPassword" placeholder="请输入密码" required>
                 </div>
-                <button type="submit" class="auth-btn">登 录</button>
+                <button type="submit" class="auth-btn" id="loginBtn"><span>登 录</span></button>
             </form>
 
             <div class="auth-links" id="authLinks">
-                <a href="#">忘记密码？</a> | 
+                <a href="#" onclick="showForgotPassword()">忘记密码？</a> | 
                 <a href="register.html">立即注册</a>
             </div>
             
@@ -167,6 +213,7 @@
         </div>
     </footer>
 
+    <script src="js/common.js"></script>
     <script>
         // Firebase 配置
         const firebaseConfig = {
@@ -234,7 +281,36 @@
             });
         })();
 
-        // 登录类型切换
+        // 登录方式切换（邮箱/用户名）
+        let currentLoginMethod = 'email';
+        
+        function switchLoginMethod(method) {
+            currentLoginMethod = method;
+            const emailBtn = document.getElementById('emailLoginBtn');
+            const usernameBtn = document.getElementById('usernameLoginBtn');
+            const loginLabel = document.getElementById('loginLabel');
+            const loginInput = document.getElementById('loginInput');
+            
+            if (method === 'email') {
+                emailBtn.classList.add('active');
+                emailBtn.style.background = 'rgba(124,92,255,0.3)';
+                usernameBtn.classList.remove('active');
+                usernameBtn.style.background = 'transparent';
+                loginLabel.textContent = '邮箱账号';
+                loginInput.placeholder = '请输入邮箱';
+                loginInput.type = 'email';
+            } else {
+                usernameBtn.classList.add('active');
+                usernameBtn.style.background = 'rgba(124,92,255,0.3)';
+                emailBtn.classList.remove('active');
+                emailBtn.style.background = 'transparent';
+                loginLabel.textContent = '用户名';
+                loginInput.placeholder = '请输入用户名';
+                loginInput.type = 'text';
+            }
+        }
+        
+        // 登录类型切换（用户/管理员）
         let currentLoginType = 'user';
         
         function switchLoginType(type) {
@@ -274,72 +350,92 @@
             }
         }
 
-        // 邮箱密码登录
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        // 登录表单提交
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const email = document.getElementById('loginEmail').value.trim();
+            const inputValue = document.getElementById('loginInput').value.trim();
             const password = document.getElementById('loginPassword').value;
+            const loginBtn = document.getElementById('loginBtn');
             
-            if (!email || !password) {
-                alert('⚠️ 请填写完整的邮箱和密码');
+            if (!inputValue || !password) {
+                showToast('⚠️ 请填写完整的账号和密码', 'error');
                 return;
             }
             
-            if (email === 'admin@xiaomotou.com' && password === 'admin888') {
+            loginBtn.classList.add('loading');
+            
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            if (inputValue === 'admin@xiaomotou.com' && password === 'admin888') {
                 const adminInfo = {
                     uid: 'admin-001',
-                    email: email,
+                    email: 'admin@xiaomotou.com',
                     username: '超级管理员',
                     role: 'admin'
                 };
                 localStorage.setItem('currentUser', JSON.stringify(adminInfo));
-                alert('🔧 管理员登录成功！');
-                setTimeout(() => window.location.href = 'admin.html', 1500);
+                showToast('🔧 管理员登录成功！', 'success');
+                setTimeout(() => window.location.href = 'admin.html', 500);
                 return;
             }
             
-            if (firebaseAvailable) {
-                auth.signInWithEmailAndPassword(email, password)
-                    .then(async (userCredential) => {
-                        const user = userCredential.user;
-                        
-                        const snapshot = await db.ref('users/' + user.uid).once('value');
-                        const userData = snapshot.val();
-                        
-                        const userInfo = {
-                            uid: user.uid,
-                            email: user.email,
-                            username: userData?.username || user.email.split('@')[0]
-                        };
-                        localStorage.setItem('currentUser', JSON.stringify(userInfo));
-                        
-                        if (userData?.role === 'admin') {
-                            userInfo.role = 'admin';
-                            localStorage.setItem('currentUser', JSON.stringify(userInfo));
-                            alert('🔧 管理员登录成功！');
-                            setTimeout(() => window.location.href = 'admin.html', 1500);
-                        } else {
-                            alert('🎉 登录成功！欢迎回来！');
-                            setTimeout(() => window.location.href = 'index.html', 1500);
-                        }
-                    })
-                    .catch((error) => {
-                        if (error.code && error.code.includes('network')) {
-                            alert('⚠️ 网络连接失败，尝试本地登录');
-                            loginLocally(email, password);
-                        } else {
-                            loginLocally(email, password);
-                        }
-                    });
-            } else {
-                loginLocally(email, password);
-            }
+            loginLocally(inputValue, password, currentLoginMethod);
         });
         
-        function loginLocally(email, password) {
-            const localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
-            const user = localUsers.find(u => u.email === email && u.password === password);
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 14px 20px;
+                border-radius: 10px;
+                color: #fff;
+                font-size: 14px;
+                z-index: 9999;
+                transform: translateX(120%);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                max-width: 320px;
+                word-break: break-word;
+            `;
+            toast.style.background = type === 'success' 
+                ? 'linear-gradient(135deg, rgba(74, 222, 128, 0.9), rgba(34, 197, 94, 0.9))' 
+                : 'linear-gradient(135deg, rgba(248, 113, 113, 0.9), rgba(239, 68, 68, 0.9))';
+            
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            requestAnimationFrame(() => {
+                toast.style.transform = 'translateX(0)';
+            });
+            
+            setTimeout(() => {
+                toast.style.transform = 'translateX(120%)';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 2500);
+        }
+        
+        function loginLocally(inputValue, password, method = 'email') {
+            const loginBtn = document.getElementById('loginBtn');
+            
+            let localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
+            
+            if (localUsers.length === 0) {
+                localUsers = [
+                    { uid: 'demo-001', username: '演示用户', email: 'demo@xiaomotou.com', password: '123456', createdAt: new Date().toISOString() }
+                ];
+                localStorage.setItem('localUsers', JSON.stringify(localUsers));
+            }
+            
+            let user;
+            if (method === 'email') {
+                user = localUsers.find(u => u.email === inputValue && u.password === password);
+            } else {
+                user = localUsers.find(u => u.username === inputValue && u.password === password);
+            }
             
             if (user) {
                 localStorage.setItem('currentUser', JSON.stringify({
@@ -347,10 +443,27 @@
                     email: user.email,
                     username: user.username
                 }));
-                alert('🎉 登录成功！（本地模式）');
-                setTimeout(() => window.location.href = 'index.html', 1500);
+                showToast('🎉 登录成功！欢迎回来！', 'success');
+                setTimeout(() => window.location.href = 'index.html', 500);
             } else {
-                alert('❌ 登录失败：邮箱或密码错误');
+                loginBtn.classList.remove('loading');
+                const tip = method === 'email' ? '邮箱' : '用户名';
+                showToast('❌ 登录失败：' + tip + '或密码错误', 'error');
+            }
+        }
+        
+        // 忘记密码功能
+        function showForgotPassword() {
+            const email = prompt('请输入您注册时使用的邮箱：');
+            if (!email) return;
+            
+            let localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
+            const user = localUsers.find(u => u.email === email);
+            
+            if (user) {
+                alert('🔑 密码找回成功！\n\n您的密码是：' + user.password + '\n\n⚠️ 建议您登录后尽快修改密码');
+            } else {
+                alert('❌ 未找到该邮箱对应的账号！');
             }
         }
 
@@ -423,6 +536,89 @@
                     alert('❌ 登录失败：' + error.message);
                 });
         });
-    </script>
+    
+        
+        // =====================
+        // 页面自动回缩功能 - 高性能版本
+        // =====================
+        let collapseTimer = null;
+        let lastActivity = Date.now();
+        const COLLAPSE_DELAY = 5000; // 5秒无操作后自动回缩
+        let isCollapsed = false;
+        
+        // 节流包装 - 16ms约等于60FPS
+        function throttleCollapse(func, limit = 16) {
+            let inThrottle = false;
+            return function() {
+                const context = this;
+                const args = arguments;
+                if (!inThrottle) {
+                    func.apply(context, args);
+                    inThrottle = true;
+                    setTimeout(() => inThrottle = false, limit);
+                }
+            };
+        }
+        
+        function resetCollapseTimer() {
+            lastActivity = Date.now();
+            if (collapseTimer) {
+                clearTimeout(collapseTimer);
+            }
+            if (isCollapsed) {
+                expandAll();
+            }
+            collapseTimer = setTimeout(() => {
+                autoCollapse();
+            }, COLLAPSE_DELAY);
+        }
+        
+        function autoCollapse() {
+            const topBar = document.getElementById('topBar');
+            const header = document.getElementById('mainHeader');
+            
+            if (topBar && !topBar.classList.contains('collapsed')) {
+                topBar.classList.add('collapsed');
+                localStorage.setItem('topBarCollapsed', 'true');
+            }
+            if (header && !header.classList.contains('hidden')) {
+                header.classList.add('hidden');
+                header.classList.remove('visible');
+            }
+            isCollapsed = true;
+        }
+        
+        function expandAll() {
+            const topBar = document.getElementById('topBar');
+            const header = document.getElementById('mainHeader');
+            
+            if (topBar) {
+                topBar.classList.remove('collapsed');
+                localStorage.setItem('topBarCollapsed', 'false');
+            }
+            if (header) {
+                header.classList.remove('hidden');
+                header.classList.add('visible');
+            }
+            isCollapsed = false;
+            resetCollapseTimer();
+        }
+        
+        // 优化后的事件监听 - 使用passive: true提高滚动性能
+        const throttledExpand = throttleCollapse(expandAll);
+        
+        document.addEventListener('mousemove', throttledExpand, { passive: true });
+        document.addEventListener('scroll', throttledExpand, { passive: true });
+        document.addEventListener('keydown', throttledExpand, { passive: true });
+        document.addEventListener('click', throttledExpand, { passive: true });
+        document.addEventListener('touchstart', throttledExpand, { passive: true });
+        document.addEventListener('touchmove', throttledExpand, { passive: true });
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            resetCollapseTimer();
+        });
+
+</script>
 </body>
 </html>

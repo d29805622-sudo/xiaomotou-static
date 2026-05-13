@@ -330,6 +330,20 @@
             box-shadow: 0 8px 30px rgba(0,0,0,0.35);
             border: 1px solid rgba(130,100,255,0.25);
         }
+        .kanban-name {
+            position: absolute;
+            bottom: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(130, 100, 255, 0.9), rgba(255, 100, 150, 0.9));
+            color: #fff;
+            font-size: 13px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            white-space: nowrap;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
 
         /* 页脚 */
         .footer {
@@ -423,7 +437,21 @@
             transform: translateY(0);
             position: sticky;
         }
-    </style>
+    
+        .top-bar {
+            transition: all 0.3s ease;
+        }
+        .top-bar.collapsed {
+            transform: translateY(-100%);
+            margin-bottom: -60px;
+        }
+        .header {
+            transition: all 0.3s ease;
+        }
+        .header.hidden {
+            transform: translateY(-100%);
+        }
+</style>
 </head>
 <body>
     <div class="top-bar" id="topBar">
@@ -654,6 +682,89 @@
                 }
             });
         })();
-    </script>
+    
+        
+        // =====================
+        // 页面自动回缩功能 - 高性能版本
+        // =====================
+        let collapseTimer = null;
+        let lastActivity = Date.now();
+        const COLLAPSE_DELAY = 5000; // 5秒无操作后自动回缩
+        let isCollapsed = false;
+        
+        // 节流包装 - 16ms约等于60FPS
+        function throttleCollapse(func, limit = 16) {
+            let inThrottle = false;
+            return function() {
+                const context = this;
+                const args = arguments;
+                if (!inThrottle) {
+                    func.apply(context, args);
+                    inThrottle = true;
+                    setTimeout(() => inThrottle = false, limit);
+                }
+            };
+        }
+        
+        function resetCollapseTimer() {
+            lastActivity = Date.now();
+            if (collapseTimer) {
+                clearTimeout(collapseTimer);
+            }
+            if (isCollapsed) {
+                expandAll();
+            }
+            collapseTimer = setTimeout(() => {
+                autoCollapse();
+            }, COLLAPSE_DELAY);
+        }
+        
+        function autoCollapse() {
+            const topBar = document.getElementById('topBar');
+            const header = document.getElementById('mainHeader');
+            
+            if (topBar && !topBar.classList.contains('collapsed')) {
+                topBar.classList.add('collapsed');
+                localStorage.setItem('topBarCollapsed', 'true');
+            }
+            if (header && !header.classList.contains('hidden')) {
+                header.classList.add('hidden');
+                header.classList.remove('visible');
+            }
+            isCollapsed = true;
+        }
+        
+        function expandAll() {
+            const topBar = document.getElementById('topBar');
+            const header = document.getElementById('mainHeader');
+            
+            if (topBar) {
+                topBar.classList.remove('collapsed');
+                localStorage.setItem('topBarCollapsed', 'false');
+            }
+            if (header) {
+                header.classList.remove('hidden');
+                header.classList.add('visible');
+            }
+            isCollapsed = false;
+            resetCollapseTimer();
+        }
+        
+        // 优化后的事件监听 - 使用passive: true提高滚动性能
+        const throttledExpand = throttleCollapse(expandAll);
+        
+        document.addEventListener('mousemove', throttledExpand, { passive: true });
+        document.addEventListener('scroll', throttledExpand, { passive: true });
+        document.addEventListener('keydown', throttledExpand, { passive: true });
+        document.addEventListener('click', throttledExpand, { passive: true });
+        document.addEventListener('touchstart', throttledExpand, { passive: true });
+        document.addEventListener('touchmove', throttledExpand, { passive: true });
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            resetCollapseTimer();
+        });
+
+</script>
 </body>
 </html>

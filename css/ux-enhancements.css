@@ -1,84 +1,93 @@
-/* 全局用户体验增强样式 */
+/* 全局用户体验增强样式 - 高性能版本 */
 
-/* 按钮和链接的通用动画优化 */
+/* 性能优化：启用GPU加速，避免重绘重排 */
+a, .btn, .card-btn, .auth-btn, .sign-btn, .common-btn,
+.card, .tool-item, input, textarea, select {
+    will-change: transform;
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* 按钮和链接的动画优化 - 只过渡必要的属性 */
 a, .btn, .card-btn, .auth-btn, .sign-btn, .common-btn {
-    transition: all 0.2s ease-out !important;
+    transition: transform 0.15s ease-out, opacity 0.15s ease-out !important;
     transform: translateZ(0);
 }
 
 a:hover, .btn:hover, .card-btn:hover, .auth-btn:hover, .sign-btn:hover, .common-btn:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px) translateZ(0);
 }
 
 a:active, .btn:active, .card-btn:active, .auth-btn:active, .sign-btn:active, .common-btn:active {
-    transform: translateY(0);
+    transform: translateY(0) translateZ(0);
 }
 
-/* 卡片悬停优化 */
+/* 卡片悬停优化 - 只过渡必要属性 */
 .card {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;
 }
 
 .card:hover {
-    transform: translateY(-4px) scale(1.02) !important;
+    transform: translateY(-4px) scale(1.02) translateZ(0) !important;
     box-shadow: 0 20px 40px rgba(100, 70, 230, 0.3) !important;
 }
 
 /* 输入框聚焦优化 */
 input, textarea, select {
-    transition: all 0.2s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 input:focus, textarea:focus, select:focus {
-    transform: scale(1.02);
-    box-shadow: 0 0 20px rgba(124, 92, 255, 0.4);
+    transform: scale(1.01) translateZ(0);
+    box-shadow: 0 0 15px rgba(124, 92, 255, 0.3);
 }
 
 /* 浮动工具栏优化 */
 .tool-item {
-    transition: all 0.2s ease;
+    transition: transform 0.15s ease, background 0.15s ease;
 }
 
 .tool-item:hover {
-    transform: scale(1.1);
+    transform: scale(1.1) translateZ(0);
 }
 
-/* 页面加载动画 */
+/* 页面加载动画 - 优化性能 */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(10px) translateZ(0); }
+    to { opacity: 1; transform: translateY(0) translateZ(0); }
 }
 
 .fade-in {
-    animation: fadeIn 0.5s ease forwards;
+    animation: fadeIn 0.4s ease-out forwards;
 }
 
-/* 按钮点击涟漪效果 */
+/* 按钮点击涟漪效果 - 简化实现 */
 .btn, .card-btn, .auth-btn {
     position: relative;
     overflow: hidden;
 }
 
-/* 通知提示动画 */
+/* 通知提示动画 - 优化性能 */
 @keyframes slideIn {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+    from { transform: translateX(100%) translateZ(0); opacity: 0; }
+    to { transform: translateX(0) translateZ(0); opacity: 1; }
 }
 
 @keyframes slideOut {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(100%); opacity: 0; }
+    from { transform: translateX(0) translateZ(0); opacity: 1; }
+    to { transform: translateX(100%) translateZ(0); opacity: 0; }
 }
 
 .notification {
-    animation: slideIn 0.3s ease forwards;
+    will-change: transform, opacity;
+    animation: slideIn 0.25s ease-out forwards;
 }
 
 .notification.hiding {
-    animation: slideOut 0.3s ease forwards;
+    animation: slideOut 0.25s ease-out forwards;
 }
 
-/* 滚动条美化 */
+/* 滚动条美化 - 保持原样但优化选择器 */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -97,23 +106,24 @@ input:focus, textarea:focus, select:focus {
     background: linear-gradient(135deg, #8c72ff, #b874ff);
 }
 
-/* 加载动画 */
+/* 加载动画 - 优化性能 */
 .loading-spinner {
     border: 3px solid rgba(124, 92, 255, 0.2);
     border-top: 3px solid #8064ff;
     border-radius: 50%;
     width: 40px;
     height: 40px;
-    animation: spin 1s linear infinite;
+    animation: spin 0.8s linear infinite;
     margin: 20px auto;
+    will-change: transform;
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% { transform: rotate(0deg) translateZ(0); }
+    100% { transform: rotate(360deg) translateZ(0); }
 }
 
-/* 工具提示 */
+/* 工具提示 - 优化过渡 */
 .tooltip {
     position: relative;
 }
@@ -123,7 +133,7 @@ input:focus, textarea:focus, select:focus {
     position: absolute;
     bottom: 100%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateZ(0);
     padding: 5px 10px;
     background: rgba(20, 23, 45, 0.95);
     color: #e8ebf2;
@@ -132,7 +142,7 @@ input:focus, textarea:focus, select:focus {
     white-space: nowrap;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s;
+    transition: opacity 0.15s ease-out;
 }
 
 .tooltip:hover::after {
@@ -162,11 +172,12 @@ img {
     border-radius: 8px;
     background: rgba(124, 92, 255, 0.1);
     color: #c5cbe8;
-    transition: all 0.2s;
+    transition: background 0.15s ease, transform 0.15s ease;
 }
 
 .pagination a:hover {
     background: rgba(124, 92, 255, 0.3);
+    transform: translateY(-1px) translateZ(0);
 }
 
 .pagination .active {
@@ -212,6 +223,7 @@ img {
     align-items: center;
     justify-content: center;
     z-index: 10000;
+    will-change: opacity;
 }
 
 .modal-content {
@@ -222,4 +234,5 @@ img {
     width: 90%;
     border: 1px solid rgba(130, 100, 255, 0.3);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    will-change: transform, opacity;
 }

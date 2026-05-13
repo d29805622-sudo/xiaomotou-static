@@ -69,7 +69,21 @@
             .sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(124,92,255,0.2); }
             .admin-container { flex-direction: column; }
         }
-    </style>
+    
+        .top-bar {
+            transition: all 0.3s ease;
+        }
+        .top-bar.collapsed {
+            transform: translateY(-100%);
+            margin-bottom: -60px;
+        }
+        .header {
+            transition: all 0.3s ease;
+        }
+        .header.hidden {
+            transform: translateY(-100%);
+        }
+</style>
 </head>
 <body>
     <div class="admin-container">
@@ -78,6 +92,7 @@
             <nav>
                 <ul>
                     <li><a href="#dashboard" class="active" onclick="showSection('dashboard')">📊 仪表盘</a></li>
+                    <li><a href="#events" onclick="showSection('events')">🎯 活动管理</a></li>
                     <li><a href="#admins" onclick="showSection('admins')">👥 区域管理员</a></li>
                     <li><a href="#announcements" onclick="showSection('announcements')">📢 公告管理</a></li>
                     <li><a href="#feedback" onclick="showSection('feedback')">📮 用户反馈</a></li>
@@ -102,6 +117,21 @@
                         <div class="card-icon">👥</div>
                         <div class="card-title">总用户数</div>
                         <div class="card-value" id="total-users">1,234</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🎯</div>
+                        <div class="card-title">活动总数</div>
+                        <div class="card-value" id="total-events">5</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🏆</div>
+                        <div class="card-title">活动参与人数</div>
+                        <div class="card-value" id="event-participants">856</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">⭐</div>
+                        <div class="card-title">可上榜人数</div>
+                        <div class="card-value" id="event-rankable">100</div>
                     </div>
                     <div class="card">
                         <div class="card-icon">👤</div>
@@ -196,6 +226,7 @@
             <div id="users" class="section" style="display: none;">
                 <div class="section-title">
                     <h3>👤 用户管理</h3>
+                    <input type="text" id="user-search" placeholder="搜索用户名或邮箱..." style="padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(124,92,255,0.3); background: #0f1223; color: #fff; width: 200px;" onkeyup="searchUsers()">
                 </div>
                 <table>
                     <thead>
@@ -230,6 +261,28 @@
                         </tr>
                     </thead>
                     <tbody id="content-table-body"></tbody>
+                </table>
+            </div>
+
+            <div id="events" class="section" style="display: none;">
+                <div class="section-title">
+                    <h3>🎯 活动管理</h3>
+                    <button class="btn" onclick="showEventModal()">+ 创建活动</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>活动名称</th>
+                            <th>参与人数</th>
+                            <th>可上榜人数</th>
+                            <th>开始时间</th>
+                            <th>结束时间</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="events-table-body"></tbody>
                 </table>
             </div>
         </main>
@@ -316,10 +369,86 @@
         </div>
     </div>
 
+    <div id="event-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('event-modal')">&times;</span>
+            <h3>创建活动</h3>
+            <form id="event-form">
+                <div class="form-group">
+                    <label>活动名称</label>
+                    <input type="text" id="event-name" required>
+                </div>
+                <div class="form-group">
+                    <label>开始时间</label>
+                    <input type="date" id="event-start" required>
+                </div>
+                <div class="form-group">
+                    <label>结束时间</label>
+                    <input type="date" id="event-end" required>
+                </div>
+                <div class="form-group">
+                    <label>参与人数</label>
+                    <input type="number" id="event-participants" value="0" required>
+                </div>
+                <div class="form-group">
+                    <label>可上榜人数</label>
+                    <input type="number" id="event-rankable" value="100" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">创建活动</button>
+                    <button type="button" class="btn-cancel" onclick="closeModal('event-modal')">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="user-detail-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('user-detail-modal')">&times;</span>
+            <h3>👤 用户详情</h3>
+            <div id="user-detail-content"></div>
+            <div class="form-actions" style="margin-top: 20px;">
+                <button class="action-btn edit" onclick="showChangePasswordModal()">修改密码</button>
+                <button class="btn-cancel" onclick="closeModal('user-detail-modal')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="change-password-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('change-password-modal')">&times;</span>
+            <h3>🔑 修改密码</h3>
+            <form id="change-password-form">
+                <div class="form-group">
+                    <label>新密码</label>
+                    <input type="password" id="new-password" placeholder="请输入新密码" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label>确认密码</label>
+                    <input type="password" id="confirm-password" placeholder="请再次输入新密码" required minlength="6">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">确认修改</button>
+                    <button type="button" class="btn-cancel" onclick="closeModal('change-password-modal')">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         let currentFeedbackId = null;
+        let currentUserId = null;
 
         function initData() {
+            if (!localStorage.getItem('events')) {
+                localStorage.setItem('events', JSON.stringify([
+                    { id: 1, name: '五一创作大赛', participants: 320, rankable: 50, startDate: '2024-05-01', endDate: '2024-05-15', status: 'active' },
+                    { id: 2, name: '角色设计大赛', participants: 215, rankable: 30, startDate: '2024-04-10', endDate: '2024-04-30', status: 'completed' },
+                    { id: 3, name: '同人小说征集', participants: 156, rankable: 20, startDate: '2024-05-15', endDate: '2024-06-15', status: 'upcoming' },
+                    { id: 4, name: '美术作品征集', participants: 102, rankable: 30, startDate: '2024-04-01', endDate: '2024-04-20', status: 'completed' },
+                    { id: 5, name: '周年庆特别活动', participants: 63, rankable: 10, startDate: '2024-06-01', endDate: '2024-06-10', status: 'upcoming' },
+                ]));
+            }
             if (!localStorage.getItem('admins')) {
                 localStorage.setItem('admins', JSON.stringify([
                     { id: 1, username: '张管理员', email: 'zhang@admin.com', region: '华北', status: 'active', createdAt: '2024-01-15' },
@@ -368,6 +497,7 @@
             
             const titles = {
                 'dashboard': '📊 仪表盘',
+                'events': '🎯 活动管理',
                 'admins': '👥 区域管理员',
                 'announcements': '📢 公告管理',
                 'feedback': '📮 用户反馈',
@@ -377,6 +507,7 @@
             document.getElementById('page-title').textContent = titles[sectionId];
             
             if (sectionId === 'dashboard') loadDashboard();
+            if (sectionId === 'events') loadEvents();
             if (sectionId === 'admins') loadAdmins();
             if (sectionId === 'announcements') loadAnnouncements();
             if (sectionId === 'feedback') loadFeedback();
@@ -398,6 +529,15 @@
             const users = JSON.parse(localStorage.getItem('users') || '[]');
             document.getElementById('total-users').textContent = users.length.toLocaleString();
             
+            const events = JSON.parse(localStorage.getItem('events') || '[]');
+            document.getElementById('total-events').textContent = events.length;
+            
+            const totalParticipants = events.reduce((sum, e) => sum + e.participants, 0);
+            document.getElementById('event-participants').textContent = totalParticipants;
+            
+            const totalRankable = events.reduce((sum, e) => sum + e.rankable, 0);
+            document.getElementById('event-rankable').textContent = totalRankable;
+            
             document.getElementById('latest-announcements').innerHTML = announcements.slice(0, 3).map(a => 
                 `<div style="padding: 10px; border-bottom: 1px solid rgba(124,92,255,0.1);">
                     <div style="font-weight: 500;">${a.title}</div>
@@ -411,6 +551,27 @@
                     <div style="font-size: 12px; color: #8892b0; margin-top: 5px;">${f.username} · ${f.createdAt}</div>
                 </div>`
             ).join('');
+        }
+
+        function loadEvents() {
+            const events = JSON.parse(localStorage.getItem('events') || '[]');
+            const statusMap = { active: '进行中', upcoming: '即将开始', completed: '已结束' };
+            const statusClass = { active: 'status-processed', upcoming: 'status-pending', completed: 'status-rejected' };
+            document.getElementById('events-table-body').innerHTML = events.map(e => `
+                <tr>
+                    <td>${e.id}</td>
+                    <td>${e.name}</td>
+                    <td>${e.participants}</td>
+                    <td>${e.rankable}</td>
+                    <td>${e.startDate}</td>
+                    <td>${e.endDate}</td>
+                    <td><span class="status-badge ${statusClass[e.status]}">${statusMap[e.status]}</span></td>
+                    <td>
+                        <button class="action-btn edit" onclick="editEvent(${e.id})">编辑</button>
+                        <button class="action-btn delete" onclick="deleteEvent(${e.id})">删除</button>
+                    </td>
+                </tr>
+            `).join('');
         }
 
         function loadAdmins() {
@@ -467,8 +628,16 @@
             `).join('');
         }
 
-        function loadUsers() {
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
+        function loadUsers(searchKeyword = '') {
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            if (searchKeyword) {
+                users = users.filter(user => 
+                    user.username.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+                    user.email.toLowerCase().includes(searchKeyword.toLowerCase())
+                );
+            }
+            
             document.getElementById('user-table-body').innerHTML = users.map(user => `
                 <tr>
                     <td>${user.id}</td>
@@ -478,10 +647,52 @@
                     <td>${user.registeredAt}</td>
                     <td><span class="status-badge ${user.status === 'active' ? 'status-processed' : 'status-rejected'}">${user.status === 'active' ? '正常' : '封禁'}</span></td>
                     <td>
+                        <button class="action-btn view" onclick="viewUser(${user.id})">查看</button>
                         <button class="action-btn edit" onclick="toggleUserStatus(${user.id})">${user.status === 'active' ? '封禁' : '解封'}</button>
                     </td>
                 </tr>
             `).join('');
+        }
+        
+        function searchUsers() {
+            const keyword = document.getElementById('user-search').value;
+            loadUsers(keyword);
+        }
+        
+        function viewUser(userId) {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.id === userId);
+            currentUserId = userId;
+            
+            if (user) {
+                document.getElementById('user-detail-content').innerHTML = `
+                    <div style="padding: 10px; border-bottom: 1px solid rgba(124,92,255,0.1); margin-bottom: 10px;">
+                        <strong>用户ID：</strong>${user.id}
+                    </div>
+                    <div style="padding: 10px; border-bottom: 1px solid rgba(124,92,255,0.1); margin-bottom: 10px;">
+                        <strong>用户名：</strong>${user.username}
+                    </div>
+                    <div style="padding: 10px; border-bottom: 1px solid rgba(124,92,255,0.1); margin-bottom: 10px;">
+                        <strong>邮箱：</strong>${user.email}
+                    </div>
+                    <div style="padding: 10px; border-bottom: 1px solid rgba(124,92,255,0.1); margin-bottom: 10px;">
+                        <strong>等级：</strong>${user.level}
+                    </div>
+                    <div style="padding: 10px; border-bottom: 1px solid rgba(124,92,255,0.1); margin-bottom: 10px;">
+                        <strong>注册时间：</strong>${user.registeredAt}
+                    </div>
+                    <div style="padding: 10px;">
+                        <strong>状态：</strong><span class="status-badge ${user.status === 'active' ? 'status-processed' : 'status-rejected'}">${user.status === 'active' ? '正常' : '封禁'}</span>
+                    </div>
+                `;
+                document.getElementById('user-detail-modal').classList.add('show');
+            }
+        }
+        
+        function showChangePasswordModal() {
+            document.getElementById('change-password-form').reset();
+            document.getElementById('user-detail-modal').classList.remove('show');
+            document.getElementById('change-password-modal').classList.add('show');
         }
 
         function loadContent() {
@@ -514,8 +725,25 @@
             document.getElementById('announcement-modal').classList.add('show');
         }
 
+        function showEventModal() {
+            document.getElementById('event-form').reset();
+            document.getElementById('event-modal').classList.add('show');
+        }
+
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('show');
+        }
+        
+        function toggleUserStatus(userId) {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const userIndex = users.findIndex(u => u.id === userId);
+            
+            if (userIndex !== -1) {
+                users[userIndex].status = users[userIndex].status === 'active' ? 'banned' : 'active';
+                localStorage.setItem('users', JSON.stringify(users));
+                loadUsers();
+                alert('用户状态已更新！');
+            }
         }
 
         document.getElementById('admin-form').addEventListener('submit', (e) => {
@@ -553,6 +781,54 @@
             closeModal('announcement-modal');
             loadAnnouncements();
             alert('公告发布成功！');
+        });
+
+        document.getElementById('event-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const events = JSON.parse(localStorage.getItem('events') || '[]');
+            const newEvent = {
+                id: Date.now(),
+                name: document.getElementById('event-name').value,
+                startDate: document.getElementById('event-start').value,
+                endDate: document.getElementById('event-end').value,
+                participants: parseInt(document.getElementById('event-participants').value),
+                rankable: parseInt(document.getElementById('event-rankable').value),
+                status: 'upcoming'
+            };
+            events.push(newEvent);
+            localStorage.setItem('events', JSON.stringify(events));
+            closeModal('event-modal');
+            loadEvents();
+            loadDashboard();
+            alert('活动创建成功！');
+        });
+        
+        document.getElementById('change-password-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (newPassword !== confirmPassword) {
+                alert('两次输入的密码不一致！');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                alert('密码长度至少需要6位！');
+                return;
+            }
+            
+            let localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
+            const userIndex = localUsers.findIndex(u => u.id === currentUserId || u.email === currentUserId);
+            
+            if (userIndex !== -1) {
+                localUsers[userIndex].password = newPassword;
+                localStorage.setItem('localUsers', JSON.stringify(localUsers));
+                closeModal('change-password-modal');
+                alert('密码修改成功！');
+            } else {
+                alert('未找到该用户！');
+            }
         });
 
         function viewFeedback(id) {
@@ -625,6 +901,21 @@
             }
         }
 
+        function deleteEvent(id) {
+            if (confirm('确定要删除这个活动吗？')) {
+                const events = JSON.parse(localStorage.getItem('events') || '[]');
+                const filtered = events.filter(e => e.id !== id);
+                localStorage.setItem('events', JSON.stringify(filtered));
+                loadEvents();
+                loadDashboard();
+                alert('删除成功！');
+            }
+        }
+
+        function editEvent(id) {
+            alert('编辑功能待完善！');
+        }
+
         function toggleUserStatus(id) {
             const users = JSON.parse(localStorage.getItem('users') || '[]');
             const updated = users.map(u => u.id === id ? { ...u, status: u.status === 'active' ? 'banned' : 'active' } : u);
@@ -657,6 +948,89 @@
 
         initData();
         showSection('dashboard');
-    </script>
+    
+        
+        // =====================
+        // 页面自动回缩功能 - 高性能版本
+        // =====================
+        let collapseTimer = null;
+        let lastActivity = Date.now();
+        const COLLAPSE_DELAY = 5000; // 5秒无操作后自动回缩
+        let isCollapsed = false;
+        
+        // 节流包装 - 16ms约等于60FPS
+        function throttleCollapse(func, limit = 16) {
+            let inThrottle = false;
+            return function() {
+                const context = this;
+                const args = arguments;
+                if (!inThrottle) {
+                    func.apply(context, args);
+                    inThrottle = true;
+                    setTimeout(() => inThrottle = false, limit);
+                }
+            };
+        }
+        
+        function resetCollapseTimer() {
+            lastActivity = Date.now();
+            if (collapseTimer) {
+                clearTimeout(collapseTimer);
+            }
+            if (isCollapsed) {
+                expandAll();
+            }
+            collapseTimer = setTimeout(() => {
+                autoCollapse();
+            }, COLLAPSE_DELAY);
+        }
+        
+        function autoCollapse() {
+            const topBar = document.getElementById('topBar');
+            const header = document.getElementById('mainHeader');
+            
+            if (topBar && !topBar.classList.contains('collapsed')) {
+                topBar.classList.add('collapsed');
+                localStorage.setItem('topBarCollapsed', 'true');
+            }
+            if (header && !header.classList.contains('hidden')) {
+                header.classList.add('hidden');
+                header.classList.remove('visible');
+            }
+            isCollapsed = true;
+        }
+        
+        function expandAll() {
+            const topBar = document.getElementById('topBar');
+            const header = document.getElementById('mainHeader');
+            
+            if (topBar) {
+                topBar.classList.remove('collapsed');
+                localStorage.setItem('topBarCollapsed', 'false');
+            }
+            if (header) {
+                header.classList.remove('hidden');
+                header.classList.add('visible');
+            }
+            isCollapsed = false;
+            resetCollapseTimer();
+        }
+        
+        // 优化后的事件监听 - 使用passive: true提高滚动性能
+        const throttledExpand = throttleCollapse(expandAll);
+        
+        document.addEventListener('mousemove', throttledExpand, { passive: true });
+        document.addEventListener('scroll', throttledExpand, { passive: true });
+        document.addEventListener('keydown', throttledExpand, { passive: true });
+        document.addEventListener('click', throttledExpand, { passive: true });
+        document.addEventListener('touchstart', throttledExpand, { passive: true });
+        document.addEventListener('touchmove', throttledExpand, { passive: true });
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            resetCollapseTimer();
+        });
+
+</script>
 </body>
 </html>
