@@ -822,47 +822,8 @@
     </footer>
 
     <script>
-        // 导航栏滚动自动隐藏/显示功能
-        (function() {
-            let lastScrollY = 0;
-            const header = document.getElementById('mainHeader');
-            const scrollThreshold = 100;
-            let isUserScrolling = false;
-            
-            function handleScroll() {
-                const currentScrollY = window.scrollY;
-                
-                // 向下滚动超过阈值，隐藏导航栏
-                if (currentScrollY > lastScrollY && currentScrollY > scrollThreshold) {
-                    if (!header.classList.contains('hidden')) {
-                        header.classList.remove('visible');
-                        header.classList.add('hidden');
-                    }
-                } 
-                // 向上滚动，显示导航栏
-                else if (currentScrollY < lastScrollY) {
-                    if (header.classList.contains('hidden')) {
-                        header.classList.remove('hidden');
-                        header.classList.add('visible');
-                    }
-                }
-                
-                lastScrollY = currentScrollY;
-            }
-            
-            // 使用 requestAnimationFrame 优化性能
-            let ticking = false;
-            window.addEventListener('scroll', function() {
-                if (!ticking) {
-                    window.requestAnimationFrame(function() {
-                        handleScroll();
-                        ticking = false;
-                    });
-                    ticking = true;
-                }
-            });
-            
-            function toggleNavMenu() {
+        // 导航菜单切换功能
+        function toggleNavMenu() {
             const navMenu = document.getElementById('navMenu');
             const menuToggle = document.getElementById('menuToggle');
             
@@ -873,6 +834,7 @@
         }
         
         // 顶部栏折叠功能
+        (function() {
             const topBar = document.getElementById('topBar');
             const collapseBtn = document.getElementById('collapseBtn');
             const expandTopBtn = document.getElementById('expandTopBtn');
@@ -912,89 +874,6 @@
         })();
     </script>
     <script src="js/common.js"></script>
-    <script src="js/script.js">
-        
-        // =====================
-        // 页面自动回缩功能 - 高性能版本
-        // =====================
-        let collapseTimer = null;
-        let lastActivity = Date.now();
-        const COLLAPSE_DELAY = 5000; // 5秒无操作后自动回缩
-        let isCollapsed = false;
-        
-        // 节流包装 - 16ms约等于60FPS
-        function throttleCollapse(func, limit = 16) {
-            let inThrottle = false;
-            return function() {
-                const context = this;
-                const args = arguments;
-                if (!inThrottle) {
-                    func.apply(context, args);
-                    inThrottle = true;
-                    setTimeout(() => inThrottle = false, limit);
-                }
-            };
-        }
-        
-        function resetCollapseTimer() {
-            lastActivity = Date.now();
-            if (collapseTimer) {
-                clearTimeout(collapseTimer);
-            }
-            if (isCollapsed) {
-                expandAll();
-            }
-            collapseTimer = setTimeout(() => {
-                autoCollapse();
-            }, COLLAPSE_DELAY);
-        }
-        
-        function autoCollapse() {
-            const topBar = document.getElementById('topBar');
-            const header = document.getElementById('mainHeader');
-            
-            if (topBar && !topBar.classList.contains('collapsed')) {
-                topBar.classList.add('collapsed');
-                localStorage.setItem('topBarCollapsed', 'true');
-            }
-            if (header && !header.classList.contains('hidden')) {
-                header.classList.add('hidden');
-                header.classList.remove('visible');
-            }
-            isCollapsed = true;
-        }
-        
-        function expandAll() {
-            const topBar = document.getElementById('topBar');
-            const header = document.getElementById('mainHeader');
-            
-            if (topBar) {
-                topBar.classList.remove('collapsed');
-                localStorage.setItem('topBarCollapsed', 'false');
-            }
-            if (header) {
-                header.classList.remove('hidden');
-                header.classList.add('visible');
-            }
-            isCollapsed = false;
-            resetCollapseTimer();
-        }
-        
-        // 优化后的事件监听 - 使用passive: true提高滚动性能
-        const throttledExpand = throttleCollapse(expandAll);
-        
-        document.addEventListener('mousemove', throttledExpand, { passive: true });
-        document.addEventListener('scroll', throttledExpand, { passive: true });
-        document.addEventListener('keydown', throttledExpand, { passive: true });
-        document.addEventListener('click', throttledExpand, { passive: true });
-        document.addEventListener('touchstart', throttledExpand, { passive: true });
-        document.addEventListener('touchmove', throttledExpand, { passive: true });
-        
-        // 页面加载时初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            resetCollapseTimer();
-        });
-
-</script>
+    <script src="js/script.js"></script>
 </body>
 </html>
