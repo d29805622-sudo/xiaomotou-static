@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>登录 - 同人创作交流平台</title>
     <link rel="stylesheet" href="css/ux-enhancements.css">
+    <link rel="stylesheet" href="css/responsive.css">
     <script src="js/common.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -108,6 +109,69 @@
         }
         .header.hidden {
             transform: translateY(-100%) translateZ(0);
+        }
+
+        @media screen and (max-width: 768px) {
+            .auth-box {
+                max-width: 95%;
+                margin: 20px auto;
+                padding: 25px;
+                border-radius: 16px;
+            }
+
+            .auth-box h2 {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            .form-group label {
+                font-size: 13px;
+                margin-bottom: 6px;
+            }
+
+            .form-group input {
+                padding: 12px 14px;
+                font-size: 14px;
+            }
+
+            .auth-btn {
+                padding: 12px;
+                font-size: 15px;
+            }
+
+            .oauth-btns {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .oauth-btn {
+                padding: 10px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .auth-box {
+                margin: 15px auto;
+                padding: 20px;
+            }
+
+            .auth-box h2 {
+                font-size: 18px;
+            }
+
+            .form-group input {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+
+            .auth-btn {
+                padding: 10px;
+                font-size: 14px;
+            }
         }
 </style>
 </head>

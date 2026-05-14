@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>个人中心 - 同人创作交流平台</title>
     <link rel="stylesheet" href="css/ux-enhancements.css">
+    <link rel="stylesheet" href="css/responsive.css">
     <script src="js/common.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -113,6 +114,51 @@
         }
         .header.hidden {
             transform: translateY(-100%);
+        }
+
+        @media screen and (max-width: 768px) {
+            .user-profile {
+                padding: 15px;
+            }
+
+            .user-info {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .user-avatar {
+                margin: 0 auto 15px;
+            }
+
+            .user-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-card {
+                padding: 15px;
+            }
+
+            .menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .menu-item {
+                padding: 15px 10px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .user-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-item {
+                padding: 12px 10px;
+            }
         }
 </style>
 </head>

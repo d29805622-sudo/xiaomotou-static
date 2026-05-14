@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>隐私协议 - 同人创作交流平台</title>
+    <link rel="stylesheet" href="css/responsive.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft Yahei", sans-serif; }
         body { background: #0c0e1a; color: #e8ebf2; line-height: 1.8; padding: 40px 20px; }
@@ -27,7 +28,23 @@
         .header.hidden {
             transform: translateY(-100%);
         }
-</style>
+
+        @media screen and (max-width: 768px) {
+            .container { width: 96%; }
+            .card-list { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+            .nav { flex-wrap: nowrap; }
+            .menu-toggle { display: flex !important; }
+            .nav-menu { position: absolute; top: 100%; left: 0; right: 0; background: rgba(18, 21, 39, 0.98); padding: 10px; display: none; flex-direction: column; }
+            .nav-menu.expanded { display: flex; }
+            .nav-menu a { padding: 10px 14px; }
+        }
+        @media screen and (max-width: 480px) {
+            .container { width: 98%; }
+            .card-list { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .btn, .card-btn { padding: 6px 12px; font-size: 13px; }
+        }
+
+    </style>
 </head>
 <body>
     <div class="container">

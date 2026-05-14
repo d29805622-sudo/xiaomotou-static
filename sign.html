@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>每日签到 - 同人创作交流平台</title>
     <link rel="stylesheet" href="css/ux-enhancements.css">
+    <link rel="stylesheet" href="css/responsive.css">
     <script src="js/common.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -98,6 +99,119 @@
         }
         .header.hidden {
             transform: translateY(-100%);
+        }
+
+        @media screen and (max-width: 768px) {
+            .sign-box {
+                max-width: 100%;
+                margin: 20px auto;
+                padding: 20px;
+                border-radius: 16px;
+            }
+
+            .sign-box h2 {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+
+            .sign-status {
+                padding: 15px;
+                margin-bottom: 20px;
+                border-radius: 12px;
+            }
+
+            .sign-status p {
+                font-size: 13px;
+            }
+
+            .sign-status .streak {
+                font-size: 24px;
+            }
+
+            .sign-status .total {
+                font-size: 15px;
+            }
+
+            .sign-btn-area {
+                margin-bottom: 20px;
+            }
+
+            .sign-button {
+                width: 160px;
+                height: 50px;
+                font-size: 16px;
+                border-radius: 25px;
+            }
+
+            .calendar-grid {
+                gap: 4px;
+            }
+
+            .calendar-day {
+                font-size: 12px;
+                border-radius: 6px;
+            }
+
+            .not-login {
+                padding: 25px;
+            }
+
+            .not-login p {
+                font-size: 14px;
+                margin-bottom: 15px;
+            }
+
+            .not-login a {
+                padding: 8px 20px;
+                font-size: 14px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .sign-box {
+                margin: 15px auto;
+                padding: 15px;
+            }
+
+            .sign-box h2 {
+                font-size: 18px;
+                margin-bottom: 15px;
+            }
+
+            .sign-status {
+                padding: 12px;
+                margin-bottom: 15px;
+            }
+
+            .sign-status .streak {
+                font-size: 22px;
+            }
+
+            .sign-button {
+                width: 140px;
+                height: 45px;
+                font-size: 14px;
+            }
+
+            .calendar-box {
+                margin-top: 15px;
+            }
+
+            .calendar-header {
+                margin-bottom: 10px;
+            }
+
+            .calendar-title {
+                font-size: 14px;
+            }
+
+            .calendar-grid {
+                gap: 3px;
+            }
+
+            .calendar-day {
+                font-size: 11px;
+            }
         }
 </style>
 </head>
